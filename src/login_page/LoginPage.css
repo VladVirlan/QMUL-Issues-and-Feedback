@@ -1,0 +1,106 @@
+.LoginForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    width: 50vw;
+    height: 50vh;
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+}
+
+.LogoIcon {
+    height: 100px;
+    width: 100px;
+}
+
+.FormTitle {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #21386a;
+}
+
+.InputContainer {
+    position: relative;
+    width: 300px;
+    height: 45px;
+}
+
+.InputContainer input {
+    width: 100%;
+    height: 100%;
+    padding: 0 45px 0 40px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.InputContainer input::placeholder {
+    color: rgb(255, 255, 255, 0.8);
+}
+
+.InputContainer input:focus {
+    border-color: white;
+}
+
+.InputIcon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+.LeftIcon {
+    left: 12px;
+}
+
+.RightIcon {
+    right: 0;
+}
+
+.EyeButton {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+#LogInButton {
+    width: 300px;
+    height: 45px;
+    border: transparent;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+    color: #21386a;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease-in;
+}
+
+#LogInButton:hover {
+    opacity: 0.85;
+}
+
+.LoginForm p {
+    color: white;
+    font-size: 0.9rem;
+    text-align: center;
+}

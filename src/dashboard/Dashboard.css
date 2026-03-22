@@ -1,0 +1,30 @@
+.DashboardContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 90vh;
+    width: 75vw;
+
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+}
+
+#LogOutButton {
+    width: 300px;
+    height: 45px;
+    border: transparent;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+    color: #21386a;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease-in;
+}
+
+#LogOutButton:hover {
+    opacity: 0.85;
+}
