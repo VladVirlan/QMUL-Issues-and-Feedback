@@ -56,6 +56,8 @@ const Performance = () => {
 
     return (
         <div className="PerformanceContainer">
+            {loading && <p className="loadingText">Updating metrics...</p>}
+
             <div className="HeaderRow">
                 <h2>System Performance</h2>
                 <button className="refreshBtn" onClick={refreshMetrics}>
@@ -66,8 +68,6 @@ const Performance = () => {
             <p className="lastUpdated">
                 Last updated: {lastUpdated.toLocaleTimeString()}
             </p>
-
-            {loading && <p className="loadingText">Updating metrics...</p>}
 
             <div className="MetricsGrid">
                 <div className="MetricCard">

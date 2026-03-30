@@ -1,5 +1,6 @@
 /* Main container */
 .PerformanceContainer {
+    position: relative;
     width: 100%;
     color: white;
     display: flex;
@@ -36,8 +37,18 @@
 }
 
 .loadingText {
-    font-size: 0.9rem;
+    position: absolute;
+    top: 50px;
+    right: 0px;
+
+    font-size: 0.85rem;
     opacity: 0.7;
+
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 10px;
+    border-radius: 6px;
+
+    backdrop-filter: blur(6px);
 }
 
 /* Metrics */
@@ -224,6 +235,12 @@
 @media (max-width: 1024px) {
     .PerformanceContainer {
         gap: 25px;
+    }
+
+    .loadingText {
+        top: 40px;
+        right: 0px;
+        font-size: 0.8rem;
     }
 
     .MetricsGrid {
