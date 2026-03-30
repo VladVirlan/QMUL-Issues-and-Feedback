@@ -1,30 +1,103 @@
+/* Dashboard main container */
 .DashboardContainer {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
+    justify-content: space-between;
+    align-items: stretch;
+
     height: 90vh;
     width: 75vw;
+    padding: 30px;
 
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(10px);
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
-#LogOutButton {
-    width: 300px;
-    height: 45px;
-    border: transparent;
-    border-radius: 4px;
-    background: #fff;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
-    color: #21386a;
-    font-size: 1rem;
-    font-weight: 600;
+/* Tabs */
+.Tabs {
+    display: flex;
+    gap: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 10px;
+}
+
+.tab {
+    background: none;
+    border: none;
     cursor: pointer;
-    transition: 0.2s ease-in;
+
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+
+    padding-bottom: 8px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.tab:hover {
+    color: white;
+}
+
+.tab.active {
+    color: white;
+}
+
+.tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #21386a;
+    border-radius: 2px;
+}
+
+.TabContent {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.4rem;
+    color: white;
+}
+
+/* Log Out Button */
+#LogOutButton {
+    align-self: center;
+
+    width: 220px;
+    height: 45px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(254, 254, 254, 0.9),
+        rgba(254, 254, 254, 0.4)
+    );
+    color: white;
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 #LogOutButton:hover {
-    opacity: 0.85;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(254, 254, 254, 0.1);
+}
+
+#LogOutButton:active {
+    transform: scale(0.98);
 }
