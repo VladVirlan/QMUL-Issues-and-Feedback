@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
-import { supabase } from "../supabase/supabaseClient";
-import Performance from "../components/admin_tabs/Performance";
-import Users from "../components/admin_tabs/Users";
+import { supabase } from "./supabase/supabaseClient";
+import Performance from "./components/admin_tabs/Performance";
+import Users from "./components/admin_tabs/Users";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("tab1");
