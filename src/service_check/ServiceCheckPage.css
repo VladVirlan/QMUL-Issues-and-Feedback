@@ -1,0 +1,87 @@
+.HeaderRow {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.ServiceIntroContainer {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    margin-top: 20px;
+    
+}
+
+.NoServiceCountCard, .PartialServiceCountCard {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 15px 20px;
+    gap: 0.5rem;
+    border-radius: 14px;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.NoServiceCountCard img, .PartialServiceCountCard img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+.NoServiceCountCard p, .PartialServiceCountCard p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.backBtn {
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ServiceListContainer {
+    width: 100%;
+    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ServiceCard {
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.status {
+    font-weight: 600;
+}
+
+.status.green {
+    color: #4caf50;
+}
+
+.status.orange {
+    color: #ff9800;
+}
+
+.status.red {
+    color: #f44336;
+}
