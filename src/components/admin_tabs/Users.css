@@ -1,0 +1,317 @@
+/* Main container */
+.UsersContainer {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Header */
+.HeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Title */
+.PageTitle {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Refresh Button */
+.refreshBtn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.refreshBtn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Loading */
+.loadingText {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 10px;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+/* Users List */
+.UsersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* User Card */
+.UserCard {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+    backdrop-filter: blur(12px);
+    word-break: break-all;
+}
+
+/* Email */
+.UserEmail {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* Status */
+.UserStatus {
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+.statusActive {
+    color: #4caf50;
+}
+
+.statusDisabled {
+    color: #f44336;
+}
+
+/* Last login */
+.LastLogin {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* Role Select */
+.RoleSelect {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    background: rgba(10, 20, 40, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    color: white;
+    font-size: 0.95rem;
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    cursor: pointer;
+    outline: none;
+
+    transition: all 0.25s ease;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2300e5ff' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+
+    padding-right: 36px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 10px 25px rgba(0, 0, 70, 0.35);
+}
+
+.RoleSelect:hover {
+    border-color: rgba(0, 229, 255, 0.35);
+    transform: translateY(-1px);
+    box-shadow:
+        0 12px 30px rgba(0, 229, 255, 0.12),
+        0 10px 25px rgba(0, 0, 70, 0.35);
+}
+
+.RoleSelect:focus {
+    border-color: rgba(0, 229, 255, 0.6);
+    box-shadow:
+        0 0 0 3px rgba(0, 229, 255, 0.18),
+        0 10px 25px rgba(0, 0, 70, 0.4);
+}
+
+.RoleSelect option {
+    background: rgba(0, 0, 70, 0.95);
+    color: rgba(255, 255, 255, 0.9);
+
+    border-bottom: 1px solid rgba(0, 229, 255, 0.08);
+}
+
+.RoleSelect option:hover {
+    background: rgba(28, 181, 224, 0.25);
+    color: white;
+}
+
+.RoleSelect option:checked {
+    background: rgba(28, 181, 224, 0.35);
+    color: white;
+}
+
+/* Actions */
+.ActionsRow {
+    margin-top: 12px;
+}
+
+/* Buttons */
+.primaryBtn,
+.dangerBtn {
+    padding: 10px 14px;
+    border-radius: 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    width: 100%;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition: all 0.25s ease;
+
+    position: relative;
+    overflow: hidden;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.primaryBtn {
+    background: linear-gradient(
+        135deg,
+        rgba(28, 181, 224, 0.35),
+        rgba(46, 125, 50, 0.6)
+    );
+
+    border-color: rgba(28, 181, 224, 0.35);
+}
+
+.dangerBtn {
+    background: linear-gradient(
+        135deg,
+        rgba(229, 57, 53, 0.5),
+        rgba(183, 28, 28, 0.7)
+    );
+
+    border-color: rgba(229, 57, 53, 0.4);
+}
+
+.primaryBtn:hover,
+.dangerBtn:hover {
+    transform: translateY(-2px) scale(1.02);
+
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.35),
+        0 0 18px rgba(28, 181, 224, 0.25);
+}
+
+.primaryBtn:active,
+.dangerBtn:active {
+    transform: translateY(0px) scale(0.98);
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.primaryBtn::before,
+.dangerBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent
+    );
+
+    transform: skewX(-20deg);
+    transition: all 0.5s ease;
+}
+
+.primaryBtn:hover::before,
+.dangerBtn:hover::before {
+    left: 130%;
+}
+
+/* Info */
+.InfoSection {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.InfoSection p {
+    margin: 4px 0;
+    opacity: 0.8;
+}
+
+/* Transitions */
+.UserCard,
+.refreshBtn,
+.primaryBtn,
+.dangerBtn {
+    transition: all 0.3s ease;
+}
+
+/* Scrollbar */
+.UsersContainer::-webkit-scrollbar {
+    width: 0px;
+}
+
+.UsersContainer:hover::-webkit-scrollbar {
+    width: 8px;
+}
+
+.UsersContainer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.UsersContainer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+}
+
+.UsersContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile View */
+@media (max-width: 425px) {
+    .HeaderRow {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .ActionsRow {
+        flex-direction: column;
+    }
+
+    .refreshBtn {
+        width: 100%;
+    }
+}
