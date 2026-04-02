@@ -22,7 +22,7 @@
 
 /* Title */
 .PageTitle {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
     font-weight: 600;
     margin: 0;
 }
@@ -42,13 +42,9 @@
 }
 
 /* Loading */
-.loadingText {
-    font-size: 0.85rem;
-    opacity: 0.7;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 6px 10px;
-    border-radius: 6px;
-    width: fit-content;
+.UsersContainer .loadingText {
+    top: 60px;
+    right: 12.5px;
 }
 
 /* Users List */
@@ -98,7 +94,7 @@
 
 /* Role Select */
 .RoleSelect {
-    margin-top: 10px;
+    margin: 15px 0;
     width: 100%;
     padding: 10px 12px;
 

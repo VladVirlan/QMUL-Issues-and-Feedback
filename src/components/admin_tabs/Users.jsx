@@ -6,6 +6,7 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
+    const [lastUpdated, setLastUpdated] = useState(new Date());
     const [newUser, setNewUser] = useState({
         email: "",
         role: "user",
@@ -23,6 +24,7 @@ const Users = () => {
             setUsers(data);
         }
 
+        setLastUpdated(new Date());
         setLoading(false);
     };
 
@@ -106,6 +108,10 @@ const Users = () => {
                     Refresh
                 </button>
             </div>
+
+            <p className="lastUpdated">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
 
             {loading && <div className="loadingText">Loading users...</div>}
 
