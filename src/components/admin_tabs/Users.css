@@ -60,7 +60,7 @@
 
 /* User Card */
 .UserCard {
-    flex: 1;
+    flex: 1 1 30%;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
@@ -257,6 +257,52 @@
     left: 130%;
 }
 
+/* Create User Card */
+.CreateUserCard {
+    margin-top: 10px;
+
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 14px;
+    padding: 16px;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.CreateUserCard h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Input field */
+.InputField {
+    padding: 10px 12px;
+    border-radius: 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 70, 0.25);
+
+    color: white;
+    outline: none;
+
+    backdrop-filter: blur(10px);
+}
+
+.InputField::placeholder {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.InputField:focus {
+    border-color: rgba(0, 229, 255, 0.6);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+}
+
 /* Info */
 .InfoSection {
     background: rgba(255, 255, 255, 0.05);
@@ -299,12 +345,23 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* Tablet View */
+@media (max-width: 768px) {
+    .UserCard {
+        flex: 1 1 40%;
+    }
+}
+
 /* Mobile View */
 @media (max-width: 425px) {
     .HeaderRow {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+    }
+
+    .UserCard {
+        flex: 1 1 50%;
     }
 
     .ActionsRow {

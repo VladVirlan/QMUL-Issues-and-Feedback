@@ -6,6 +6,10 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
+    const [newUser, setNewUser] = useState({
+        email: "",
+        role: "user",
+    });
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -64,6 +68,36 @@ const Users = () => {
         }
     };
 
+    const createUser = async () => {
+        if (!newUser.email) {
+            alert("Email is required");
+            return;
+        }
+
+        setActionLoading("create");
+
+        const { data, error } = await supabase.auth.signUp({
+            email: newUser.email,
+            password: newUser.password,
+            options: {
+                data: {
+                    role: newUser.role,
+                },
+            },
+        });
+
+        setActionLoading(null);
+
+        if (error) {
+            console.error(error);
+            alert(error.message);
+        } else {
+            alert("User created successfully");
+            setNewUser({ email: "", role: "user" });
+            fetchUsers();
+        }
+    };
+
     return (
         <div className="UsersContainer">
             <div className="HeaderRow">
@@ -97,7 +131,6 @@ const Users = () => {
                                 : "Never"}
                         </div>
 
-                        {/* ROLE CONTROL (ONLY WAY TO CHANGE ROLE) */}
                         <select
                             className="RoleSelect"
                             value={user.role || ""}
@@ -111,7 +144,6 @@ const Users = () => {
                             <option value="user">User</option>
                         </select>
 
-                        {/* SINGLE ACTION BUTTON */}
                         <div className="ActionsRow">
                             <button
                                 className={
@@ -131,6 +163,50 @@ const Users = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            <div className="CreateUserCard">
+                <h3>Create New User</h3>
+
+                <input
+                    className="InputField"
+                    type="email"
+                    placeholder="Email"
+                    value={newUser.email}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, email: e.target.value })
+                    }
+                />
+
+                <input
+                    className="InputField"
+                    type="password"
+                    placeholder="Password"
+                    value={newUser.password}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, password: e.target.value })
+                    }
+                />
+
+                <select
+                    className="RoleSelect"
+                    value={newUser.role}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, role: e.target.value })
+                    }
+                >
+                    <option value="admin">Admin</option>
+                    <option value="staff">Staff</option>
+                    <option value="user">User</option>
+                </select>
+
+                <button
+                    className="primaryBtn"
+                    disabled={actionLoading === "create"}
+                    onClick={createUser}
+                >
+                    {actionLoading === "create" ? "Creating..." : "Create User"}
+                </button>
             </div>
 
             <div className="InfoSection">
