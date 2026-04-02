@@ -3,10 +3,12 @@ import "./Dashboard.css";
 import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("tab1");
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     const adminTabs = ["Performance", "Users"];
     const tabs = ["tab1", "tab2", "tab3"];
@@ -70,6 +72,10 @@ const Dashboard = () => {
             <div className="TabContent">
                 <ActiveComponent />
             </div>
+
+            <button onClick={() => navigate('/service-check')}>
+                Service Status
+            </button>
 
             <button id="LogOutButton" onClick={handleLogout}>
                 LOG OUT

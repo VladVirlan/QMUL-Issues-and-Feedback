@@ -1,4 +1,5 @@
 import './ServiceCheckPage.css';
+import { useNavigate } from 'react-router-dom';
 
 const services = [
   {
@@ -30,14 +31,14 @@ const services = [
 
 const getStatusClass = (status) => {
   const normalized = status.toLowerCase();
-
   if (normalized === 'good') return 'green';
   if (normalized === 'partial') return 'orange';
   return 'red';
 };
 
 function ServiceCheckPage() {
-    
+    const navigate = useNavigate();
+
     return (
         <div className="ServiceCheckPage">
             <div className={"HeaderRow"}>
@@ -45,7 +46,7 @@ function ServiceCheckPage() {
                     <h1>QMUL IT Service Status</h1>
                     <p>Last updated: 2024-06-01 14:30</p>
                 </div>
-                <button className={"backBtn"}>Back</button>
+                <button className={"backBtn"} onClick={() => navigate('/dashboard')}>Back</button>
             </div>
             <div className={"ServiceIntroContainer"}>
                 <div className={`NoServiceCountCard`}>
@@ -75,7 +76,5 @@ function ServiceCheckPage() {
         </div>
     );
 }
-
-
 
 export default ServiceCheckPage;
