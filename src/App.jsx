@@ -1,81 +1,39 @@
-import React, { useState, useEffect } from "react";
-import "./Dashboard.css";
-import { supabase } from "./supabase/supabaseClient";
-import Performance from "./components/admin_tabs/Performance";
-import Users from "./components/admin_tabs/Users";
+import "./App.css";
+import { useEffect, useState } from "react";
+import { supabase } from "./supabase/supabaseClient.js";
+import LoginPage from "./login_page/LoginPage.jsx";
+import Dashboard from "./dashboard/Dashboard.jsx";
 
-const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState("tab1");
-    const [user, setUser] = useState(null);
-
-    const adminTabs = ["Performance", "Users"];
-    const tabs = ["tab1", "tab2", "tab3"];
-
-    const tabContent = {
-        Performance: Performance,
-        Users: Users,
-        tab1: () => <p>This is Tab 1 content</p>,
-        tab2: () => <p>This is Tab 2 content</p>,
-        tab3: () => <p>This is Tab 3 content</p>,
-    };
-
-    const ActiveComponent = tabContent[activeTab];
+const App = () => {
+    const [session, setSession] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getUser();
+        async function getSession() {
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+
+            setSession(session);
+            setLoading(false);
+        }
+
+        getSession();
+
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    async function getUser() {
-        const { data } = await supabase.auth.getUser();
-        setUser(data?.user || null);
+    if (loading) {
+        return <div>Loading...</div>;
     }
 
-    const isAdmin = user?.email === "admin@gmail.com";
-
-    useEffect(() => {
-        if (isAdmin) {
-            setActiveTab("Performance");
-        }
-    }, [isAdmin]);
-
-    async function handleLogout() {
-        await supabase.auth.signOut();
-    }
-
-    return (
-        <div className="DashboardContainer">
-            <div className="Tabs">
-                {isAdmin &&
-                    adminTabs.map((tab) => (
-                        <button
-                            key={tab}
-                            className={activeTab === tab ? "tab active" : "tab"}
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-
-                {tabs.map((tab) => (
-                    <button
-                        key={tab}
-                        className={activeTab === tab ? "tab active" : "tab"}
-                        onClick={() => setActiveTab(tab)}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            <div className="TabContent">
-                <ActiveComponent />
-            </div>
-
-            <button id="LogOutButton" onClick={handleLogout}>
-                LOG OUT
-            </button>
-        </div>
-    );
+    return session ? <Dashboard /> : <LoginPage />;
 };
 
-export default Dashboard;
+export default App;
