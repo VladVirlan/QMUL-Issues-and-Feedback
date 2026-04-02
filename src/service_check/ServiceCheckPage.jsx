@@ -1,7 +1,4 @@
-import './index.css';
 import './ServiceCheckPage.css';
-import dangerSign from './assets/danger-sign.svg';
-import warningSign from './assets/warning-sign.svg';
 
 const services = [
   {
@@ -52,12 +49,12 @@ function ServiceCheckPage() {
             </div>
             <div className={"ServiceIntroContainer"}>
                 <div className={`NoServiceCountCard`}>
-                    <img src={dangerSign} alt="Danger Sign" />
+                    <span>🚨</span>
                     <p>No Service: </p>
                     <p>1</p>
                 </div>
                 <div className={'PartialServiceCountCard'}>
-                    <img src={warningSign} alt="Warning Sign" />
+                    <span>⚠️</span>
                     <p>Partial Service: </p>
                     <p>1</p>
                 </div>
