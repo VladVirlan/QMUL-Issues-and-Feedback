@@ -25,6 +25,23 @@ const LoginPage = () => {
         if (error) {
             setErrorMessage(error.message);
         }
+
+        const { data: userRow, error: userError } = await supabase
+            .from("users")
+            .select("status")
+            .eq("email", email)
+            .single();
+
+        if (userError) {
+            setErrorMessage(userError.message);
+            await supabase.auth.signOut();
+            return;
+        }
+
+        if (userRow?.status === "disabled") {
+            await supabase.auth.signOut();
+            return;
+        }
     }
 
     return (

@@ -8,6 +8,13 @@ const App = () => {
     const [session, setSession] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const updateLastLogin = async (user) => {
+        await supabase
+            .from("users")
+            .update({ last_login: new Date().toISOString() })
+            .eq("id", user.id);
+    };
+
     useEffect(() => {
         async function getSession() {
             const {
@@ -15,6 +22,12 @@ const App = () => {
             } = await supabase.auth.getSession();
 
             setSession(session);
+
+            const { data } = await supabase.auth.getUser();
+            if (data?.user) {
+                updateLastLogin(data.user);
+            }
+
             setLoading(false);
         }
 
@@ -24,6 +37,10 @@ const App = () => {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
+
+            if (_event === "SIGNED_IN" && session?.user) {
+                updateLastLogin(session.user);
+            }
         });
 
         return () => subscription.unsubscribe();
