@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Performance.css";
+import "./AdminTabs.css";
 
 const Performance = () => {
     const [maintenanceMode, setMaintenanceMode] = useState(false);
