@@ -67,15 +67,19 @@ const Dashboard = () => {
                         {tab}
                     </button>
                 ))}
+
+                <button
+                    style={{ marginLeft: "auto" }}
+                    className="tab"
+                    onClick={() => navigate('/service-check')}
+                >
+                    🔧 Service Status
+                </button>
             </div>
 
             <div className="TabContent">
                 <ActiveComponent />
             </div>
-
-            <button onClick={() => navigate('/service-check')}>
-                Service Status
-            </button>
 
             <button id="LogOutButton" onClick={handleLogout}>
                 LOG OUT
