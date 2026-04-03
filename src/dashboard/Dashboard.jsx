@@ -3,18 +3,19 @@ import "./Dashboard.css";
 import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
+import ECPage from "../ec_page/ECPage";
 
 const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState("tab1");
+    const [activeTab, setActiveTab] = useState("EC");
     const [user, setUser] = useState(null);
 
     const adminTabs = ["Performance", "Users"];
-    const tabs = ["tab1", "tab2", "tab3"];
+    const tabs = ["EC", "tab2", "tab3"];
 
     const tabContent = {
         Performance: Performance,
         Users: Users,
-        tab1: () => <p>This is Tab 1 content</p>,
+        EC: () => <ECPage />,
         tab2: () => <p>This is Tab 2 content</p>,
         tab3: () => <p>This is Tab 3 content</p>,
     };
