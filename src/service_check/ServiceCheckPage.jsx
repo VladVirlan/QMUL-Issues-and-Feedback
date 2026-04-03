@@ -1,33 +1,39 @@
-import './index.css';
-import './ServiceCheckPage.css';
-import dangerSign from './assets/danger-sign.svg';
-import warningSign from './assets/warning-sign.svg';
+import '/src/index.css'
+import './ServiceCheckPage.css'
+import dangerSign from '/src/assets/service_check/danger-sign.svg';
+import warningSign from '/src/assets/service_check/warning-sign.svg';
+import { useState } from 'react';
 
 const services = [
   {
     name: "Campus or Building",
     desc: "Maintenance, outages",
     status: "Good",
+    downdesc: "",
   },
   {
     name: "eLearning",
     desc: "QPlus, QReview",
     status: "Good",
+    downdesc: "",
   },
   {
     name: "Email",
     desc: "Office 365, IMAP",
     status: "Good",
+    downdesc: "",
   },
   {
     name: "Printing",
-    desc: "Printing delays affecting student queues",
+    desc: "Central Print Service, Student printing",
     status: "Partial",
+    downdesc: "Printing service is experiencing delays. Some printers may be offline. Expected to be resolved by 17:00.",
   },
   {
     name: "Wi-Fi",
-    desc: "Outage in multiple buildings",
+    desc: "eduroam",
     status: "No service",
+    downdesc: "Wifi cut off for 2 hours due to power failure in data centre. Expected to be resolved by 16:30.",
   },
 ];
 
@@ -40,7 +46,12 @@ const getStatusClass = (status) => {
 };
 
 function ServiceCheckPage() {
-    
+    const [openServiceIndex, setOpenServiceIndex] = useState(null);
+
+    const toggleService = (index) => {
+        setOpenServiceIndex((current) => (current === index ? null : index));
+    };
+
     return (
         <div className="ServiceCheckPage">
             <div className={"HeaderRow"}>
@@ -51,27 +62,43 @@ function ServiceCheckPage() {
                 <button className={"backBtn"}>Back</button>
             </div>
             <div className={"ServiceIntroContainer"}>
-                <div className={`NoServiceCountCard`}>
+                <div className={"ServiceCountContainer"}>
                     <img src={dangerSign} alt="Danger Sign" />
-                    <p>No Service: </p>
-                    <p>1</p>
+                    <div className={`ServiceCountCard red`}>
+                        <p>1 No Service</p>
+                    </div>
                 </div>
-                <div className={'PartialServiceCountCard'}>
+                <div className={"ServiceCountContainer"}>
                     <img src={warningSign} alt="Warning Sign" />
-                    <p>Partial Service: </p>
-                    <p>1</p>
+                    <div className={'ServiceCountCard orange'}>
+                        <p>1 Partial Service</p>
+                    </div>
                 </div>
             </div>
+
             <div className={"ServiceListContainer"}>
                 {services.map((service, index) => (
-                    <div key={index} className="ServiceCard">
-                        <div>
-                            <h3>{service.name}</h3>
-                            <p>{service.desc}</p>
+                    <div
+                        key={index}
+                        className={`ServiceCard ${openServiceIndex === index ? 'isOpen' : ''}`}
+                        onClick={() => service.downdesc && toggleService(index)}
+                    >
+                        <div className={"ServiceContent"}>
+                            <div>
+                                <h3>{service.name}</h3>
+                                <p className={"ServiceDescription"}>{service.desc}</p>
+                            </div>
+                            <div>
+                                <p className={`status ${getStatusClass(service.status)}`}>
+                                    {service.status}
+                                </p>
+                            </div>
                         </div>
-                        <span className={`status ${getStatusClass(service.status)}`}>
-                            {service.status}
-                        </span>
+                        {service.downdesc && (
+                            <div className={"HiddenServiceContent"}>
+                                <p>{service.downdesc}</p>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
