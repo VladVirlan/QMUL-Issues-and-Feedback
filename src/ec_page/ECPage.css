@@ -48,7 +48,7 @@
     height: 24px;
     border-radius: 50%;
     font-size: 0.75rem;
-    background: #fff;
+    background: #ffffff;
     color: #21386a;
     font-weight: bold;
 }
@@ -85,6 +85,7 @@
 .ec-confirmation-panel p {
     color: rgba(255, 255, 255, 0.88);
     line-height: 1.45;
+    font-size: 0.95rem;
 }
 
 .ec-form-grid {
@@ -122,6 +123,10 @@
     outline: none;
 }
 
+.ec-field textarea::placeholder {
+    color: #ffffff
+}
+
 .ec-field select option {
     color: #111111;
 }
@@ -152,7 +157,7 @@
 .ec-radio-item,
 .ec-checkbox-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     font-size: 0.92rem;
     color: rgba(255, 255, 255, 0.92);
@@ -162,6 +167,7 @@
     margin-top: 14px;
     border-radius: 10px;
     padding: 12px;
+    font-size: 0.95rem;
     border: 1px solid transparent;
 }
 
