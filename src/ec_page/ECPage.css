@@ -4,6 +4,7 @@
     max-width: 1040px;
     padding: 8px 8px 0;
     display: flex;
+    justify-content: center;
     flex-direction: column;
     gap: 16px;
     overflow-y: auto;
@@ -30,8 +31,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
-    border-radius: 999px;
+    padding: 12px;
+    border-radius: 14px;
+    flex: 1 1 auto;
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.85rem;
@@ -42,11 +44,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     font-size: 0.75rem;
-    background: rgba(255, 255, 255, 0.12);
+    background: #fff;
+    color: #21386a;
+    font-weight: bold;
 }
 
 .ec-step-chip.active {
