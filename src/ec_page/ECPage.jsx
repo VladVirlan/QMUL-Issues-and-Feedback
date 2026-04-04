@@ -44,6 +44,7 @@ const ECPage = () => {
         : STEPS;
 
     const activeStepLabel = STEPS[currentStep];
+    const stepTransitionKey = `${currentStep}-${formData.claimType}`;
     const moduleLabel = selectedModule
         ? `${selectedModule.code} - ${selectedModule.name}`
         : "Not selected";
@@ -180,73 +181,75 @@ const ECPage = () => {
                 </div>
             )}
 
-            {currentStep === 0 && (
-                <GuidanceStep
-                    soughtGuidance={formData.soughtGuidance}
-                    onChange={(value) => updateFormData({ soughtGuidance: value })}
-                />
-            )}
+            <div key={stepTransitionKey} className="ec-step-content" aria-live="polite">
+                {currentStep === 0 && (
+                    <GuidanceStep
+                        soughtGuidance={formData.soughtGuidance}
+                        onChange={(value) => updateFormData({ soughtGuidance: value })}
+                    />
+                )}
 
-            {currentStep === 1 && (
-                <ClaimTypeStep
-                    claimType={formData.claimType}
-                    selfCertConfirmed={formData.selfCertConfirmed}
-                    onTypeChange={(value) =>
-                        updateFormData({
-                            claimType: value,
-                            selfCertConfirmed: value === CLAIM_TYPES.SELF_CERTIFICATION ? formData.selfCertConfirmed : false,
-                        })
-                    }
-                    onSelfCertConfirm={(value) => updateFormData({ selfCertConfirmed: value })}
-                />
-            )}
+                {currentStep === 1 && (
+                    <ClaimTypeStep
+                        claimType={formData.claimType}
+                        selfCertConfirmed={formData.selfCertConfirmed}
+                        onTypeChange={(value) =>
+                            updateFormData({
+                                claimType: value,
+                                selfCertConfirmed: value === CLAIM_TYPES.SELF_CERTIFICATION ? formData.selfCertConfirmed : false,
+                            })
+                        }
+                        onSelfCertConfirm={(value) => updateFormData({ selfCertConfirmed: value })}
+                    />
+                )}
 
-            {currentStep === 2 && (
-                <CircumstancesStep
-                    circumstance={formData.circumstance}
-                    summary={formData.summary}
-                    circumstances={CIRCUMSTANCE_OPTIONS}
-                    onCircumstanceChange={(value) => updateFormData({ circumstance: value })}
-                    onSummaryChange={(value) => updateFormData({ summary: value })}
-                />
-            )}
+                {currentStep === 2 && (
+                    <CircumstancesStep
+                        circumstance={formData.circumstance}
+                        summary={formData.summary}
+                        circumstances={CIRCUMSTANCE_OPTIONS}
+                        onCircumstanceChange={(value) => updateFormData({ circumstance: value })}
+                        onSummaryChange={(value) => updateFormData({ summary: value })}
+                    />
+                )}
 
-            {currentStep === 3 && (
-                <AssessmentImpactStep
-                    modules={MODULE_OPTIONS}
-                    moduleCode={formData.moduleCode}
-                    assessment={formData.assessment}
-                    impactType={formData.impactType}
-                    deadline={formData.deadline}
-                    impactTypes={IMPACT_TYPES}
-                    onModuleChange={(value) => updateFormData({ moduleCode: value, assessment: "" })}
-                    onAssessmentChange={(value) => updateFormData({ assessment: value })}
-                    onImpactTypeChange={(value) => updateFormData({ impactType: value })}
-                    onDeadlineChange={(value) => updateFormData({ deadline: value })}
-                />
-            )}
+                {currentStep === 3 && (
+                    <AssessmentImpactStep
+                        modules={MODULE_OPTIONS}
+                        moduleCode={formData.moduleCode}
+                        assessment={formData.assessment}
+                        impactType={formData.impactType}
+                        deadline={formData.deadline}
+                        impactTypes={IMPACT_TYPES}
+                        onModuleChange={(value) => updateFormData({ moduleCode: value, assessment: "" })}
+                        onAssessmentChange={(value) => updateFormData({ assessment: value })}
+                        onImpactTypeChange={(value) => updateFormData({ impactType: value })}
+                        onDeadlineChange={(value) => updateFormData({ deadline: value })}
+                    />
+                )}
 
-            {currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD && (
-                <EvidenceStep
-                    evidenceChoice={formData.evidenceChoice}
-                    evidenceFileName={formData.evidenceFileName}
-                    uploadLaterConfirmed={formData.uploadLaterConfirmed}
-                    noEvidenceReason={formData.noEvidenceReason}
-                    onChoiceChange={(value) =>
-                        updateFormData({
-                            evidenceChoice: value,
-                            evidenceFileName: "",
-                            uploadLaterConfirmed: false,
-                            noEvidenceReason: "",
-                        })
-                    }
-                    onFileChange={(value) => updateFormData({ evidenceFileName: value })}
-                    onUploadLaterConfirm={(value) => updateFormData({ uploadLaterConfirmed: value })}
-                    onNoEvidenceReasonChange={(value) => updateFormData({ noEvidenceReason: value })}
-                />
-            )}
+                {currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD && (
+                    <EvidenceStep
+                        evidenceChoice={formData.evidenceChoice}
+                        evidenceFileName={formData.evidenceFileName}
+                        uploadLaterConfirmed={formData.uploadLaterConfirmed}
+                        noEvidenceReason={formData.noEvidenceReason}
+                        onChoiceChange={(value) =>
+                            updateFormData({
+                                evidenceChoice: value,
+                                evidenceFileName: "",
+                                uploadLaterConfirmed: false,
+                                noEvidenceReason: "",
+                            })
+                        }
+                        onFileChange={(value) => updateFormData({ evidenceFileName: value })}
+                        onUploadLaterConfirm={(value) => updateFormData({ uploadLaterConfirmed: value })}
+                        onNoEvidenceReasonChange={(value) => updateFormData({ noEvidenceReason: value })}
+                    />
+                )}
 
-            {currentStep === 5 && <ReviewStep formData={formData} moduleLabel={moduleLabel} />}
+                {currentStep === 5 && <ReviewStep formData={formData} moduleLabel={moduleLabel} />}
+            </div>
 
             <div className="ec-actions">
                 <button type="button" className="ec-secondary-btn" onClick={handleBack} disabled={currentStep === 0}>

@@ -1,53 +1,54 @@
 .ec-page-shell {
     width: 100%;
     height: 100%;
-    max-width: 1040px;
-    padding: 8px 8px 0;
+    max-width: 1180px;
+    padding: 12px 12px 0;
     display: flex;
     justify-content: center;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
     overflow-y: auto;
 }
 
 .ec-header h1 {
-    font-size: 1.75rem;
+    font-size: 2rem;
     color: #ffffff;
 }
 
 .ec-header p {
-    margin-top: 8px;
+    margin-top: 10px;
     color: rgba(255, 255, 255, 0.85);
-    font-size: 0.95rem;
+    font-size: 1.1rem;
 }
 
 .ec-step-progress {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
 }
 
 .ec-step-chip {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px;
-    border-radius: 14px;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
     flex: 1 1 auto;
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.8);
-    font-size: 0.85rem;
+    font-size: 0.96rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: background-color 0.24s ease, border-color 0.24s ease, color 0.24s ease;
 }
 
 .ec-step-chip-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    font-size: 0.75rem;
+    font-size: 0.84rem;
     background: #ffffff;
     color: #21386a;
     font-weight: bold;
@@ -67,8 +68,8 @@
 
 .ec-form-card,
 .ec-confirmation-panel {
-    border-radius: 14px;
-    padding: 18px;
+    border-radius: 16px;
+    padding: 22px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(16px);
@@ -77,22 +78,22 @@
 
 .ec-form-card h2,
 .ec-confirmation-panel h2 {
-    font-size: 1.2rem;
-    margin-bottom: 8px;
+    font-size: 1.36rem;
+    margin-bottom: 10px;
 }
 
 .ec-form-card p,
 .ec-confirmation-panel p {
     color: rgba(255, 255, 255, 0.88);
     line-height: 1.45;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
 }
 
 .ec-form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 14px;
+    gap: 14px;
+    margin-top: 16px;
 }
 
 .ec-form-grid.single-column {
@@ -102,11 +103,11 @@
 .ec-field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .ec-field span {
-    font-size: 0.86rem;
+    font-size: 0.98rem;
     color: rgba(255, 255, 255, 0.9);
 }
 
@@ -114,13 +115,14 @@
 .ec-field textarea,
 .ec-field select {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.24);
     background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
-    padding: 10px 12px;
-    font-size: 0.92rem;
+    padding: 12px 14px;
+    font-size: 1.03rem;
     outline: none;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
 }
 
 .ec-field textarea::placeholder {
@@ -133,20 +135,21 @@
 
 .ec-field textarea {
     resize: vertical;
-    min-height: 110px;
+    min-height: 126px;
 }
 
 .ec-field input:focus,
 .ec-field textarea:focus,
 .ec-field select:focus {
     border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
 
 .ec-radio-group {
-    margin-top: 14px;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .ec-radio-group-inline {
@@ -158,17 +161,18 @@
 .ec-checkbox-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.92rem;
+    gap: 10px;
+    font-size: 1.03rem;
     color: rgba(255, 255, 255, 0.92);
 }
 
 .ec-inline-alert {
-    margin-top: 14px;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 0.95rem;
+    margin-top: 16px;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 1.04rem;
     border: 1px solid transparent;
+    animation: ecFadeIn 0.24s ease;
 }
 
 .ec-inline-alert-warning {
@@ -184,32 +188,32 @@
 .ec-inline-alert-error {
     background: rgba(255, 140, 140, 0.14);
     border: 1px solid rgba(255, 140, 140, 0.45);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 0.9rem;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 1rem;
 }
 
 .ec-file-name {
-    margin-top: 6px;
-    font-size: 0.86rem;
+    margin-top: 8px;
+    font-size: 0.98rem;
     color: rgba(255, 255, 255, 0.84);
 }
 
 .ec-review-grid {
-    margin-top: 14px;
+    margin-top: 16px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 14px;
 }
 
 .ec-review-grid h3 {
-    margin-bottom: 4px;
-    font-size: 0.92rem;
+    margin-bottom: 6px;
+    font-size: 1.04rem;
     color: #ffffff;
 }
 
 .ec-review-grid p {
-    font-size: 0.87rem;
+    font-size: 0.98rem;
     color: rgba(255, 255, 255, 0.82);
     word-break: break-word;
 }
@@ -217,19 +221,19 @@
 .ec-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    padding-bottom: 8px;
+    gap: 12px;
+    padding-bottom: 10px;
 }
 
 .ec-primary-btn,
 .ec-secondary-btn {
     border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 0.9rem;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease;
 }
 
 .ec-primary-btn {
@@ -248,15 +252,43 @@
     transform: translateY(-1px);
 }
 
+.ec-step-content {
+    animation: ecStepEnter 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: opacity, transform;
+}
+
 .ec-secondary-btn:disabled {
     opacity: 0.45;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
+}
+
+@keyframes ecStepEnter {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 6px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes ecFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @media (max-width: 900px) {
     .ec-page-shell {
-        padding: 0;
+        padding: 6px 0 0;
     }
 
     .ec-form-grid,
@@ -265,6 +297,6 @@
     }
 
     .ec-header h1 {
-        font-size: 1.45rem;
+        font-size: 1.65rem;
     }
 }
