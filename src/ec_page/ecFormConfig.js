@@ -1,6 +1,6 @@
 export const CLAIM_TYPES = {
     STANDARD: "standard",
-    SELF_CERTIFICATION: "self-certification",
+    SELF_CERTIFICATION: "self_certification",
 };
 
 export const CIRCUMSTANCE_OPTIONS = [
@@ -16,19 +16,24 @@ export const CIRCUMSTANCE_OPTIONS = [
 
 export const MODULE_OPTIONS = [
     {
-        code: "ECS1001",
-        name: "Introduction to Data Analytics",
-        assessments: ["Coursework 1", "Group Presentation", "Final Exam"],
+        code: "ECS506U",
+        name: "Software Engineering Project",
+        assessments: ["Coursework 1", "My Skills"],
     },
     {
-        code: "ECS2002",
-        name: "Software Engineering",
-        assessments: ["Lab Assessment", "Project Milestone", "Final Report"],
+        code: "ECS518U",
+        name: "Operating Systems",
+        assessments: ["Lab Exercises", "Final Exam", "Quiz"],
     },
     {
-        code: "ECS3003",
-        name: "Human Computer Interaction",
-        assessments: ["Design Portfolio", "Usability Study", "Reflective Essay"],
+        code: "ECS522U",
+        name: "Graphical User Interfaces",
+        assessments: ["Assignment 1 - Requirements", "Assignment 2 - Design and Implementation", "Assignment 3 - Evaluation and Reflection"],
+    },
+    {
+        code: "ECS524U",
+        name: "Internet Protocol and Applications",
+        assessments: ["Term-Test 1", "Term-Test 2", "Final Exam"],
     },
 ];
 
