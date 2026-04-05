@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { supabase } from "../supabase/supabaseClient";
 import { CLAIM_TYPES, CIRCUMSTANCE_OPTIONS, IMPACT_TYPES, MODULE_OPTIONS, STEPS } from "./ecFormConfig";
 
 import StepProgress from "./components/StepProgress";
@@ -134,13 +135,36 @@ const ECPage = () => {
         setCurrentStep((previous) => Math.max(previous - 1, 0));
     };
 
-    const handleSubmit = () => {
-        const reference = 'EC' + Math.floor(100000 + Math.random() * 900000).toString(); // Once backend is implemented, change this to generate an actual uuid
+    const handleSubmit = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
 
-        setSubmittedClaim({
-        reference,
-        submittedAt: new Date().toLocaleString(),
+        if (!user) {
+            setErrorMessage("You must be logged in to submit a claim.");
+            return;
+        }
+
+        const { error } = await supabase.from('ec_claims').insert({
+            user_id: user.id,
+            sought_guidance: formData.soughtGuidance == "yes" ? true : false,
+            claim_type: formData.claimType,
+            self_cert_confirmed: formData.selfCertConfirmed,
+            circumstance: formData.circumstance,
+            summary: formData.summary,
+            module_code: formData.moduleCode,
+            assessment: formData.assessment,
+            impact_type: formData.impactType,
+            deadline: formData.deadline,
+            evidence_choice: formData.selfCertConfirmed ? "no-evidence" : formData.evidenceChoice,
+            evidence_file_name: formData.evidenceFileName,
+            upload_later_confirmed: formData.uploadLaterConfirmed,
+            no_evidence_reason: formData.selfCertConfirmed ? "Not required for self-certification" : formData.noEvidenceReason,
         });
+
+        if (error) {
+            setErrorMessage("Something went wrong submitting your claim. Please try again.");
+            console.error("Error inserting claim:", error);
+            return;
+        }
     };
 
     if (submittedClaim) {
