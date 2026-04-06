@@ -11,12 +11,10 @@ const Dashboard = () => {
     const [user, setUser] = useState(null);
 
     const adminTabs = ["Performance", "Users"];
-    const tabs = ["EC"];
 
     const tabContent = {
         Performance: Performance,
         Users: Users,
-        EC: () => <ECPage />,
     };
 
     const ActiveComponent = tabContent[activeTab];
