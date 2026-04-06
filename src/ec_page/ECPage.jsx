@@ -104,7 +104,7 @@ const ECPage = () => {
                 >
                     Back to Claims
                 </button>
-                <ECForm />
+                <ECForm setIsFormOpen={setIsFormOpen} onSubmitSuccess={fetchClaims} />
             </div>
         );
     }

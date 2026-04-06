@@ -26,7 +26,7 @@ const INITIAL_FORM_DATA = {
     noEvidenceReason: "",
 };
 
-const ECForm = () => {
+const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
 
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState(INITIAL_FORM_DATA);
@@ -162,6 +162,13 @@ const ECForm = () => {
             setErrorMessage("Something went wrong submitting your claim. Please try again.");
             console.error("Error inserting claim:", error);
             return;
+        }
+
+        setErrorMessage("");
+        setIsFormOpen(false);
+
+        if (onSubmitSuccess) {
+            await onSubmitSuccess();
         }
     };
 
