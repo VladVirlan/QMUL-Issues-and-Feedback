@@ -74,6 +74,35 @@
     padding: 0.5rem;
 }
 
+.StudentTabContent {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.StudentTabContent::-webkit-scrollbar {
+    width: 0px;
+}
+
+.StudentTabContent:hover::-webkit-scrollbar {
+    width: 8px;
+}
+
+.StudentTabContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.StudentTabContent::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s ease;
+}
+
+.StudentTabContent::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+
 @media (max-width: 920px) {
     .StudentDashboardContainer {
         width: 92vw;
