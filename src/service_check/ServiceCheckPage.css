@@ -11,17 +11,6 @@
     flex-direction: row;
 }
 
-.backBtn {
-    padding: 10px 20px;
-    font-size: 1.5rem;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-}
-
 .ServiceIntroContainer {
     width: 100%;
     display: flex;

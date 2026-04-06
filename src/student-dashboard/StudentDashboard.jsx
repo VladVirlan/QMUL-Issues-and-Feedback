@@ -16,7 +16,7 @@ const StudentDashboard = ({ onLogout }) => {
                 id: "service-availability",
                 label: "Service Availability",
                 subtitle: "View current IT service status",
-                component: () => <ServiceCheckPage hideBackButton />,
+                component: () => <ServiceCheckPage/>,
             }
         ],
         [],

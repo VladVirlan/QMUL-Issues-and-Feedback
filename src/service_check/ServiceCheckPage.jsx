@@ -86,7 +86,6 @@ const ServiceCheckPage = () => {
                     <h1>QMUL IT Service Status</h1>
                     <p>Last updated: 2024-06-01 14:30</p>
                 </div>
-                {!hideBackButton && <button className={"backBtn"}>Back</button>}
             </div>
             <div className={"ServiceIntroContainer"}>
                 <div className={"ServiceCountContainer"}>
