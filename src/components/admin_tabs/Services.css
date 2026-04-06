@@ -1,3 +1,11 @@
+.Services
+{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+
 .ServicesContainer{
     display: flex;
     flex-direction: column;
@@ -123,6 +131,31 @@
 .UpdateButton:active {
     transform: scale(0.96);
     animation: updateClickPulse 0.2s ease;
+}
+
+.UpdateButton:disabled {
+    cursor: wait;
+    opacity: 0.75;
+}
+
+.UpdateButton.isUpdated {
+    background: rgba(76, 209, 55, 0.18);
+    border-color: rgba(76, 209, 55, 0.4);
+    color: #4cd137;
+}
+
+.UpdateFeedback {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.UpdateFeedback.success {
+    color: #4cd137;
+}
+
+.UpdateFeedback.error {
+    color: #ff7675;
 }
 
 .status {
