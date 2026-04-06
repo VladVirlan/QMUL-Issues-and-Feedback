@@ -143,6 +143,11 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
+.ec-card p {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 .ec-card-status {
     background-color: rgba(171, 168, 15, 0.473);
     color: #fff9c4;
@@ -173,6 +178,11 @@
     color: inherit;
 }
 
+.ec-card-flex p {
+    min-width: 0;
+    flex: 1;
+}
+
 .ec-claim-details {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -185,6 +195,33 @@
     margin: 0;
     color: rgba(255, 255, 255, 0.9);
     font-size: 1rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.ec-late-evidence-box {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(186, 224, 255, 0.12);
+    border: 1px solid rgba(186, 224, 255, 0.35);
+}
+
+.ec-evidence-status {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.ec-evidence-status-error {
+    color: #ffd6d6;
+}
+
+.ec-evidence-status-success {
+    color: #d8ffdf;
 }
 
 .ec-form-card,

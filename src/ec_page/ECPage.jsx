@@ -10,6 +10,12 @@ const ECPage = () => {
     const [loading, setLoading] = useState(false);
     const [expandedClaimId, setExpandedClaimId] = useState(null);
     const [claims, setClaims] = useState([]);
+
+    const [pendingEvidenceFiles, setPendingEvidenceFiles] = useState({});
+    const [submittingClaimId, setSubmittingClaimId] = useState(null);
+    const [evidenceErrorClaimId, setEvidenceErrorClaimId] = useState(null);
+    const [evidenceError, setEvidenceError] = useState("");
+
     const hasClaims = claims.length > 0;
 
     const formatDate = (value) => {
@@ -19,23 +25,73 @@ const ECPage = () => {
         return parsed.toLocaleDateString();
     };
 
-    useEffect(() => {
-        const fetchClaims = async () => {
-            setLoading(true);
+    const fetchClaims = async () => {
+        setLoading(true);
 
-            const { data, error } = await supabase.from('ec_claims').select('*').order('updated_at', { ascending: false });   
+        const { data, error } = await supabase.from('ec_claims').select('*').order('updated_at', { ascending: false });
 
-            if (error) {
-                console.error("Error fetching claims:", error);
-                setLoading(false);
-                return;
-            }
-
-            setClaims(data);
+        if (error) {
+            console.error("Error fetching claims:", error);
             setLoading(false);
-        };
+            return;
+        }
+
+        setClaims(data);
+        setLoading(false);
+    };
+
+    useEffect(() => {
         fetchClaims();
     }, []);
+
+    const handlePendingEvidenceFileChange = (claimId, fileName) => {
+        setEvidenceError("");
+        setEvidenceErrorClaimId(null);
+        setPendingEvidenceFiles((previous) => ({
+            ...previous,
+            [claimId]: fileName,
+        }));
+    };
+
+    const handleUploadEvidenceNow = async (claimId) => {
+        const evidenceFileName = pendingEvidenceFiles[claimId];
+
+        if (!evidenceFileName) {
+            setEvidenceError("Please choose an evidence file first.");
+            setEvidenceErrorClaimId(claimId);
+            return;
+        }
+
+        setEvidenceError("");
+        setEvidenceErrorClaimId(null);
+        setSubmittingClaimId(claimId);
+
+        const { error } = await supabase
+            .from('ec_claims')
+            .update({
+                evidence_choice: "upload-now",
+                evidence_file_name: evidenceFileName,
+                upload_later_confirmed: false,
+                updated_at: new Date().toISOString(),
+            })
+            .eq('id', claimId);
+
+        if (error) {
+            console.error("Error updating late evidence:", error);
+            setEvidenceError("Could not submit evidence. Please try again.");
+            setEvidenceErrorClaimId(claimId);
+            setSubmittingClaimId(null);
+            return;
+        }
+
+        setPendingEvidenceFiles((previous) => ({
+            ...previous,
+            [claimId]: "",
+        }));
+
+        await fetchClaims();
+        setSubmittingClaimId(null);
+    };
 
 
     if (isFormOpen) {
@@ -121,8 +177,45 @@ const ECPage = () => {
                                     {claim?.evidence_choice === "no-evidence" && (
                                         <p><strong>No Evidence:</strong> {claim?.no_evidence_reason || "Not provided"}</p>
                                     )}
-                                    {claim?.evidence_choice === "upload_now" && (
+                                    {claim?.evidence_choice === "upload-now" && (
                                         <p><strong>Evidence:</strong> {claim?.evidence_file_name || "Not provided"}</p>
+                                    )}
+                                    {claim?.evidence_choice === "upload-later" && (
+                                        <div className="ec-late-evidence-box">
+                                            <p>
+                                                <strong>Action Required:</strong> Upload evidence now to move this claim
+                                                towards screening.
+                                            </p>
+                                            <label className="ec-field" htmlFor={`late-evidence-file-${claim.id}`}>
+                                                <span>Choose evidence file</span>
+                                                <input
+                                                    id={`late-evidence-file-${claim.id}`}
+                                                    type="file"
+                                                    onChange={(event) =>
+                                                        handlePendingEvidenceFileChange(
+                                                            claim.id,
+                                                            event.target.files?.[0]?.name || "",
+                                                        )
+                                                    }
+                                                />
+                                            </label>    
+                                            {pendingEvidenceFiles[claim.id] && (
+                                                <p className="ec-file-name">Selected: {pendingEvidenceFiles[claim.id]}</p>
+                                            )}
+                                            <button
+                                                type="button"
+                                                className="ec-primary-btn"
+                                                onClick={() => handleUploadEvidenceNow(claim.id)}
+                                                disabled={submittingClaimId === claim.id}
+                                            >
+                                                {submittingClaimId === claim.id ? "Submitting..." : "Submit Evidence"}
+                                            </button>
+                                            {evidenceError && evidenceErrorClaimId === claim.id && (
+                                                <p className="ec-evidence-status ec-evidence-status-error">
+                                                    {evidenceError}
+                                                </p>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             )}
