@@ -45,7 +45,7 @@ const getStatusClass = (status) => {
   return 'red';
 };
 
-function ServiceCheckPage() {
+function ServiceCheckPage({ hideBackButton = false }) {
     const [openServiceIndex, setOpenServiceIndex] = useState(null);
 
     const toggleService = (index) => {
@@ -59,7 +59,7 @@ function ServiceCheckPage() {
                     <h1>QMUL IT Service Status</h1>
                     <p>Last updated: 2024-06-01 14:30</p>
                 </div>
-                <button className={"backBtn"}>Back</button>
+                {!hideBackButton && <button className={"backBtn"}>Back</button>}
             </div>
             <div className={"ServiceIntroContainer"}>
                 <div className={"ServiceCountContainer"}>

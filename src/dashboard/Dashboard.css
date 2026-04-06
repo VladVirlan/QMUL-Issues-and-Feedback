@@ -1,4 +1,9 @@
 /* Dashboard main container */
+.DashboardLoading {
+    color: white;
+    font-size: 1rem;
+}
+
 .DashboardContainer {
     display: flex;
     flex-direction: column;

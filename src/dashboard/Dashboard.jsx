@@ -4,20 +4,19 @@ import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
 import ECPage from "../ec_page/ECPage";
+import StudentDashboard from "../student-dashboard/StudentDashboard";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("EC");
     const [user, setUser] = useState(null);
 
     const adminTabs = ["Performance", "Users"];
-    const tabs = ["EC", "tab2", "tab3"];
+    const tabs = ["EC"];
 
     const tabContent = {
         Performance: Performance,
         Users: Users,
         EC: () => <ECPage />,
-        tab2: () => <p>This is Tab 2 content</p>,
-        tab3: () => <p>This is Tab 3 content</p>,
     };
 
     const ActiveComponent = tabContent[activeTab];
@@ -58,6 +57,14 @@ const Dashboard = () => {
 
     async function handleLogout() {
         await supabase.auth.signOut();
+    }
+
+    if (!user) {
+        return <div className="DashboardLoading">Loading dashboard...</div>;
+    }
+
+    if (user && !isAdmin) {
+        return <StudentDashboard onLogout={handleLogout} />;
     }
 
     return (
