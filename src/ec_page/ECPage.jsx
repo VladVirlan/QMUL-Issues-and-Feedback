@@ -7,6 +7,7 @@ import ECForm from "./components/ECForm";
 const ECPage = () => {
 
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [expandedClaimId, setExpandedClaimId] = useState(null);
     const [claims, setClaims] = useState([]);
     const hasClaims = claims.length > 0;
@@ -20,18 +21,21 @@ const ECPage = () => {
 
     useEffect(() => {
         const fetchClaims = async () => {
+            setLoading(true);
+
             const { data, error } = await supabase.from('ec_claims').select('*').order('updated_at', { ascending: false });   
 
             if (error) {
                 console.error("Error fetching claims:", error);
+                setLoading(false);
                 return;
             }
 
             setClaims(data);
+            setLoading(false);
         };
         fetchClaims();
     }, []);
-
 
 
     if (isFormOpen) {
@@ -67,7 +71,12 @@ const ECPage = () => {
             </div>
 
             <div className="ec-main-content">
-                {!hasClaims ? (
+                {loading ? (
+                    <div className="ec-loading-state">
+                        <h2>Loading your claims...</h2>
+                    </div>
+                ) :
+                !hasClaims ? (
                     <div className="ec-empty-state">
                         <h2>You've submitted no EC claims yet.</h2>
                         <p>When you submit a claim, it will appear here with its latest status.</p>
