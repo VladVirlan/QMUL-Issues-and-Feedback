@@ -1,191 +1,50 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient";
-import { CLAIM_TYPES, CIRCUMSTANCE_OPTIONS, IMPACT_TYPES, MODULE_OPTIONS, STEPS } from "./ecFormConfig";
-
-import StepProgress from "./components/StepProgress";
-import GuidanceStep from "./components/GuidanceStep";
-import ClaimTypeStep from "./components/ClaimTypeStep";
-import CircumstancesStep from "./components/CircumstancesStep";
-import AssessmentImpactStep from "./components/AssessmentImpactStep";
-import EvidenceStep from "./components/EvidenceStep";
-import ReviewStep from "./components/ReviewStep";
 
 import "./ECPage.css";
-
-const INITIAL_FORM_DATA = {
-    soughtGuidance: "",
-    claimType: CLAIM_TYPES.STANDARD,
-    selfCertConfirmed: false,
-    circumstance: "",
-    summary: "",
-    moduleCode: "",
-    assessment: "",
-    impactType: "",
-    deadline: "",
-    evidenceChoice: "upload-now",
-    evidenceFileName: "",
-    uploadLaterConfirmed: false,
-    noEvidenceReason: "",
-};
+import ECForm from "./components/ECForm";
 
 const ECPage = () => {
-    const [currentStep, setCurrentStep] = useState(0);
-    const [formData, setFormData] = useState(INITIAL_FORM_DATA);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [submittedClaim, setSubmittedClaim] = useState(null);
 
-    const selectedModule = useMemo(
-        () => MODULE_OPTIONS.find((moduleItem) => moduleItem.code === formData.moduleCode),
-        [formData.moduleCode],
-    );
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [expandedClaimId, setExpandedClaimId] = useState(null);
+    const [claims, setClaims] = useState([]);
+    const hasClaims = claims.length > 0;
 
-    const visibleSteps =
-        formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION
-        ? STEPS.filter((step) => step !== "Evidence")
-        : STEPS;
-
-    const activeStepLabel = STEPS[currentStep];
-    const stepTransitionKey = `${currentStep}-${formData.claimType}`;
-    const moduleLabel = selectedModule
-        ? `${selectedModule.code} - ${selectedModule.name}`
-        : "Not selected";
-
-    const updateFormData = (updates) => {
-        setFormData((previous) => ({ ...previous, ...updates }));
+    const formatDate = (value) => {
+        if (!value) return "Not available";
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) return "Not available";
+        return parsed.toLocaleDateString();
     };
 
-    const validateCurrentStep = () => {
-        if (currentStep === 0) {
-            if (!formData.soughtGuidance) {
-                setErrorMessage("Please select whether you have sought guidance.");
-                return false;
-            }
-        }
+    useEffect(() => {
+        const fetchClaims = async () => {
+            const { data, error } = await supabase.from('ec_claims').select('*').order('updated_at', { ascending: false });   
 
-        if (currentStep === 1) {
-            if (!formData.claimType) {
-                setErrorMessage("Please select a claim type.");
-                return false;
+            if (error) {
+                console.error("Error fetching claims:", error);
+                return;
             }
 
-            if (formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION && !formData.selfCertConfirmed) {
-                setErrorMessage("Please confirm that you understand the self-certification criteria.");
-                return false;
-            }
-        }
+            setClaims(data);
+        };
+        fetchClaims();
+    }, []);
 
-        if (currentStep === 2) {
-            if (!formData.circumstance || !formData.summary.trim()) {
-                setErrorMessage("Please complete the circumstances dropdown and summary.");
-                return false;
-            }
-        }
 
-        if (currentStep === 3) {
-            if (!formData.moduleCode || !formData.assessment || !formData.impactType || !formData.deadline) {
-                setErrorMessage("Please complete module, assessment, impact type, and original deadline.");
-                return false;
-            }
-        }
 
-        if (currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD) {
-            if (formData.evidenceChoice === "upload-now" && !formData.evidenceFileName) {
-                setErrorMessage("Please choose an evidence file or select another evidence option.");
-                return false;
-            }
-
-            if (formData.evidenceChoice === "upload-later" && !formData.uploadLaterConfirmed) {
-                setErrorMessage("Please confirm that you understand claims will not progress until evidence is uploaded.");
-                return false;
-            }
-
-            if (formData.evidenceChoice === "no-evidence" && !formData.noEvidenceReason.trim()) {
-                setErrorMessage("Please explain why no evidence is being provided.");
-                return false;
-            }
-        }
-
-        setErrorMessage("");
-        return true;
-    };
-
-    const handleNext = () => {
-        const isValid = validateCurrentStep();
-
-        if (!isValid) {
-            return;
-        }
-
-        if (currentStep === 3 && formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
-            setCurrentStep(5);
-            return;
-        }
-
-        setCurrentStep((previous) => Math.min(previous + 1, 5));
-    };
-
-    const handleBack = () => {
-        setErrorMessage("");
-
-        if (currentStep === 5 && formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
-            setCurrentStep(3);
-            return;
-        }
-
-        setCurrentStep((previous) => Math.max(previous - 1, 0));
-    };
-
-    const handleSubmit = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            setErrorMessage("You must be logged in to submit a claim.");
-            return;
-        }
-
-        const { error } = await supabase.from('ec_claims').insert({
-            user_id: user.id,
-            sought_guidance: formData.soughtGuidance == "yes" ? true : false,
-            claim_type: formData.claimType,
-            self_cert_confirmed: formData.selfCertConfirmed,
-            circumstance: formData.circumstance,
-            summary: formData.summary,
-            module_code: formData.moduleCode,
-            assessment: formData.assessment,
-            impact_type: formData.impactType,
-            deadline: formData.deadline,
-            evidence_choice: formData.selfCertConfirmed ? "no-evidence" : formData.evidenceChoice,
-            evidence_file_name: formData.evidenceFileName,
-            upload_later_confirmed: formData.uploadLaterConfirmed,
-            no_evidence_reason: formData.selfCertConfirmed ? "Not required for self-certification" : formData.noEvidenceReason,
-        });
-
-        if (error) {
-            setErrorMessage("Something went wrong submitting your claim. Please try again.");
-            console.error("Error inserting claim:", error);
-            return;
-        }
-    };
-
-    if (submittedClaim) {
+    if (isFormOpen) {
         return (
             <div className="ec-page-shell">
-                <div className="ec-header">
-                    <h1>Extenuating Circumstances Application</h1>
-                    <p>Your claim has been submitted successfully.</p>
-                </div>
-
-                <div className="ec-confirmation-panel">
-                    <h2>Submission Complete</h2>
-                    <p>
-                        Your unique reference number is <strong>{submittedClaim.reference}</strong>.
-                    </p>
-                    <p>Submission time: {submittedClaim.submittedAt}</p>
-                    <p>
-                        A confirmation email has been sent to your registered address, and your claim will now
-                        appear on your dashboard for review tracking.
-                    </p>
-                </div>
+                <button
+                    type="button"
+                    className="ec-secondary-btn ec-back-to-claims-btn"
+                    onClick={() => setIsFormOpen(false)}
+                >
+                    Back to Claims
+                </button>
+                <ECForm />
             </div>
         );
     }
@@ -193,101 +52,73 @@ const ECPage = () => {
     return (
         <div className="ec-page-shell">
             <div className="ec-header">
-                <h1>Extenuating Circumstances Application</h1>
-                <p>Complete each section to submit your claim. You can review details before final submission.</p>
-            </div>
+                <h1>Submitted EC Claims</h1>
+                <p>Each submitted claim will appear here for review.</p>
 
-            <StepProgress steps={visibleSteps} activeStep={activeStepLabel} />
-
-            {errorMessage && (
-                <div className="ec-inline-alert ec-inline-alert-error" role="alert">
-                    {errorMessage}
-                </div>
-            )}
-
-            <div key={stepTransitionKey} className="ec-step-content" aria-live="polite">
-                {currentStep === 0 && (
-                    <GuidanceStep
-                        soughtGuidance={formData.soughtGuidance}
-                        onChange={(value) => updateFormData({ soughtGuidance: value })}
-                    />
-                )}
-
-                {currentStep === 1 && (
-                    <ClaimTypeStep
-                        claimType={formData.claimType}
-                        selfCertConfirmed={formData.selfCertConfirmed}
-                        onTypeChange={(value) =>
-                            updateFormData({
-                                claimType: value,
-                                selfCertConfirmed: value === CLAIM_TYPES.SELF_CERTIFICATION ? formData.selfCertConfirmed : false,
-                            })
-                        }
-                        onSelfCertConfirm={(value) => updateFormData({ selfCertConfirmed: value })}
-                    />
-                )}
-
-                {currentStep === 2 && (
-                    <CircumstancesStep
-                        circumstance={formData.circumstance}
-                        summary={formData.summary}
-                        circumstances={CIRCUMSTANCE_OPTIONS}
-                        onCircumstanceChange={(value) => updateFormData({ circumstance: value })}
-                        onSummaryChange={(value) => updateFormData({ summary: value })}
-                    />
-                )}
-
-                {currentStep === 3 && (
-                    <AssessmentImpactStep
-                        modules={MODULE_OPTIONS}
-                        moduleCode={formData.moduleCode}
-                        assessment={formData.assessment}
-                        impactType={formData.impactType}
-                        deadline={formData.deadline}
-                        impactTypes={IMPACT_TYPES}
-                        onModuleChange={(value) => updateFormData({ moduleCode: value, assessment: "" })}
-                        onAssessmentChange={(value) => updateFormData({ assessment: value })}
-                        onImpactTypeChange={(value) => updateFormData({ impactType: value })}
-                        onDeadlineChange={(value) => updateFormData({ deadline: value })}
-                    />
-                )}
-
-                {currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD && (
-                    <EvidenceStep
-                        evidenceChoice={formData.evidenceChoice}
-                        evidenceFileName={formData.evidenceFileName}
-                        uploadLaterConfirmed={formData.uploadLaterConfirmed}
-                        noEvidenceReason={formData.noEvidenceReason}
-                        onChoiceChange={(value) =>
-                            updateFormData({
-                                evidenceChoice: value,
-                                evidenceFileName: "",
-                                uploadLaterConfirmed: false,
-                                noEvidenceReason: "",
-                            })
-                        }
-                        onFileChange={(value) => updateFormData({ evidenceFileName: value })}
-                        onUploadLaterConfirm={(value) => updateFormData({ uploadLaterConfirmed: value })}
-                        onNoEvidenceReasonChange={(value) => updateFormData({ noEvidenceReason: value })}
-                    />
-                )}
-
-                {currentStep === 5 && <ReviewStep formData={formData} moduleLabel={moduleLabel} />}
-            </div>
-
-            <div className="ec-actions">
-                <button type="button" className="ec-secondary-btn" onClick={handleBack} disabled={currentStep === 0}>
-                    Back
-                </button>
-
-                {currentStep < 5 ? (
-                    <button type="button" className="ec-primary-btn" onClick={handleNext}>
-                        Continue
+                {hasClaims && (
+                    <button
+                        type="button"
+                        className="ec-go-to-form-btn ec-go-to-form-btn-header"
+                        onClick={() => setIsFormOpen(true)}
+                    >
+                        Submit New EC Claim
                     </button>
+                )}
+            </div>
+
+            <div className="ec-main-content">
+                {!hasClaims ? (
+                    <div className="ec-empty-state">
+                        <h2>You've submitted no EC claims yet.</h2>
+                        <p>When you submit a claim, it will appear here with its latest status.</p>
+                        <button type="button" className="ec-go-to-form-btn" onClick={() => setIsFormOpen(true)}>
+                            Submit Your First EC Claim
+                        </button>
+                    </div>
                 ) : (
-                    <button type="button" className="ec-primary-btn" onClick={handleSubmit}>
-                        Submit
-                    </button>
+                    claims.map((claim) => (
+                        <div key={claim.id} className="ec-card">
+                            <div className="ec-card-flex">
+                                <h2>{claim.reference}</h2>
+                                <div className="ec-card-status">
+                                    <h2>{claim.status}</h2>
+                                </div>
+                            </div>
+                            <div className="ec-card-flex">
+                                <p>{claim?.circumstance}</p>
+                                <button
+                                    type="button"
+                                    className="ec-expand-btn"
+                                    onClick={() =>
+                                        setExpandedClaimId((previous) =>
+                                            previous === claim.id ? null : claim.id,
+                                        )
+                                    }
+                                >
+                                    {expandedClaimId === claim.id ? "Hide Details" : "View Details"}
+                                </button>
+                            </div>
+
+                            {expandedClaimId === claim.id && (
+                                <div className="ec-claim-details">
+                                    <p><strong>Claim Type:</strong> {claim?.claim_type}</p>
+                                    <p><strong>Summary:</strong> {claim?.summary}</p>
+                                    <p><strong>Module:</strong> {claim?.module_code}</p>
+                                    <p><strong>Assessment:</strong> {claim?.assessment}</p>
+                                    <p><strong>Impact:</strong> {claim?.impact_type}</p>
+                                    <p><strong>Deadline:</strong> {claim?.deadline || "Not provided"}</p>
+                                    <p><strong>Submitted On:</strong> {formatDate(claim?.submitted_at)}</p>
+                                    <p><strong>Evidence Choice:</strong> {claim?.evidence_choice || "Not provided"}</p>
+                                    {claim?.evidence_choice === "no-evidence" && (
+                                        <p><strong>No Evidence:</strong> {claim?.no_evidence_reason || "Not provided"}</p>
+                                    )}
+                                    {claim?.evidence_choice === "upload_now" && (
+                                        <p><strong>Evidence:</strong> {claim?.evidence_file_name || "Not provided"}</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))
                 )}
             </div>
         </div>

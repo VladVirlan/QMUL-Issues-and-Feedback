@@ -4,10 +4,29 @@
     max-width: 1180px;
     padding: 12px 12px 0;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     gap: 20px;
     overflow-y: auto;
+}
+
+.ec-main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.ec-form-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.ec-back-to-claims-btn {
+    width: fit-content;
 }
 
 .ec-header h1 {
@@ -19,6 +38,44 @@
     margin-top: 10px;
     color: rgba(255, 255, 255, 0.85);
     font-size: 1.1rem;
+}
+
+.ec-empty-state {
+    border-radius: 16px;
+    padding: 22px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ec-empty-state h2,
+.ec-empty-state p {
+    margin: 0;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ec-go-to-form-btn {
+    width: fit-content;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #ffffff;
+    color: #21386a;
+    transition: all 0.18s ease;
+}
+
+.ec-go-to-form-btn:hover {
+    transform: translateY(-1px);
+}
+
+.ec-go-to-form-btn-header {
+    margin-top: 14px;
 }
 
 .ec-step-progress {
@@ -38,7 +95,7 @@
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.96rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    transition: background-color 0.24s ease, border-color 0.24s ease, color 0.24s ease;
+    transition: all 0.18s ease;
 }
 
 .ec-step-chip-number {
@@ -66,8 +123,72 @@
     color: #d8ffdf;
 }
 
+.ec-card-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ec-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ec-card h2,
+.ec-card p {
+    margin: 0;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ec-card-status {
+    background-color: rgba(171, 168, 15, 0.473);
+    color: #fff9c4;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(171, 168, 15, 0.7);
+}
+
+.ec-expand-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: all 0.18s ease;
+}
+
+.ec-expand-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.ec-card-status h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: inherit;
+}
+
+.ec-claim-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.ec-claim-details p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+}
+
 .ec-form-card,
-.ec-confirmation-panel {
+.ec-card {
     border-radius: 16px;
     padding: 22px;
     background: rgba(255, 255, 255, 0.08);
@@ -76,14 +197,12 @@
     -webkit-backdrop-filter: blur(16px);
 }
 
-.ec-form-card h2,
-.ec-confirmation-panel h2 {
+.ec-form-card h2 {
     font-size: 1.36rem;
     margin-bottom: 10px;
 }
 
-.ec-form-card p,
-.ec-confirmation-panel p {
+.ec-form-card p {
     color: rgba(255, 255, 255, 0.88);
     line-height: 1.45;
     font-size: 1.05rem;
@@ -122,7 +241,7 @@
     padding: 12px 14px;
     font-size: 1.03rem;
     outline: none;
-    transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+    transition: all 0.18s ease;
 }
 
 .ec-field textarea::placeholder {
@@ -233,7 +352,7 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease;
+    transition: all 0.18s ease;
 }
 
 .ec-primary-btn {
@@ -298,5 +417,9 @@
 
     .ec-header h1 {
         font-size: 1.65rem;
+    }
+
+    .ec-claim-details {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
