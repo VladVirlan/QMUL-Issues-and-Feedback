@@ -28,10 +28,27 @@ const Dashboard = () => {
 
     async function getUser() {
         const { data } = await supabase.auth.getUser();
-        setUser(data?.user || null);
+        const authUser = data?.user;
+
+        if (!authUser) return;
+
+        const { data: userData, error } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", authUser.id)
+            .single();
+
+        if (error) {
+            console.error("Error fetching role:", error);
+        }
+
+        setUser({
+            ...authUser,
+            role: userData?.role,
+        });
     }
 
-    const isAdmin = user?.email === "admin@gmail.com";
+    const isAdmin = user?.role === "admin";
 
     useEffect(() => {
         if (isAdmin) {

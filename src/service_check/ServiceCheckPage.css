@@ -1,0 +1,161 @@
+.ServiceCheckPage {
+    padding: 20px;
+    flex-direction: column;
+    display: flex;
+}
+
+.HeaderRow {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.backBtn {
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ServiceIntroContainer {
+    width: 100%;
+    display: flex;
+    gap: 2rem;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.ServiceCountContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ServiceCountContainer img {
+    width: 50px;
+    height: 50px;
+}
+
+.ServiceCountCard {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    gap: 0.5rem;
+    border-radius: 14px;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ServiceCountCard p {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.ServiceCountCard.red{
+    background: rgb(163 95 101);
+}
+
+.ServiceCountCard.orange{
+    background: rgb(184 138 77);
+}
+
+.ServiceListContainer {
+    width: 100%;
+    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ServiceCard {
+    padding: 15px;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ServiceCard:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ServiceContent
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ServiceDescription {
+    opacity: 0.5;
+}
+
+.HiddenServiceContent
+{
+    max-width: 400px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.35s ease;
+}
+
+.ServiceCard.isOpen .HiddenServiceContent {
+    max-height: 120px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.HiddenServiceContent p
+{
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+
+/* Base Pill Styling */
+.status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    border: 1px solid transparent;
+}
+
+/* Dynamic Color States */
+.status.green {
+    background-color: rgba(76, 209, 55, 0.15); /* Soft Green */
+    color: #4cd137;
+    border-color: rgba(76, 209, 55, 0.3);
+}
+
+.status.orange {
+    background-color: rgba(241, 196, 15, 0.15); /* Soft Amber */
+    color: #f1c40f;
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.status.red {
+    background-color: rgba(255, 118, 117, 0.15); /* Soft Red */
+    color: #ff7675;
+    border-color: rgba(255, 118, 117, 0.3);
+}
