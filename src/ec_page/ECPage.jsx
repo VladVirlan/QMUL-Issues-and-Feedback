@@ -4,6 +4,13 @@ import { supabase } from "../supabase/supabaseClient";
 import "./ECPage.css";
 import ECForm from "./components/ECForm";
 
+const status = {
+  submitted: "submitted",
+  under_review: "under_review",
+  approved: "approved",
+  rejected: "rejected",
+};
+
 const ECPage = () => {
 
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -145,8 +152,8 @@ const ECPage = () => {
                         <div key={claim.id} className="ec-card">
                             <div className="ec-card-flex">
                                 <h2>{claim.reference}</h2>
-                                <div className="ec-card-status">
-                                    <h2>{claim.status}</h2>
+                                <div className={`ec-card-status ${status[claim.status]}`}>
+                                    <h2>{claim.status === "under_review" ? "under review" : claim.status}</h2>
                                 </div>
                             </div>
                             <div className="ec-card-flex">

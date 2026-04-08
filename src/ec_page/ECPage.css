@@ -149,11 +149,32 @@
 }
 
 .ec-card-status {
-    background-color: rgba(171, 168, 15, 0.473);
-    color: #fff9c4;
     padding: 4px 10px;
     border-radius: 8px;
+}
+
+.ec-card-status.submitted {
+    background-color: rgba(171, 168, 15, 0.473);
+    color: #fff9c4;
     border: 1px solid rgba(171, 168, 15, 0.7);
+}
+
+.ec-card-status.under_review {
+    background-color: rgba(255, 193, 7, 0.473);
+    color: #fff3cd;
+    border: 1px solid rgba(255, 193, 7, 0.7);
+}
+
+.ec-card-status.approved {
+    background-color: rgba(76, 175, 80, 0.473);
+    color: #c8e6c9;
+    border: 1px solid rgba(76, 175, 80, 0.7);
+}
+
+.ec-card-status.rejected {
+    background-color: rgba(244, 67, 54, 0.473);
+    color: #ffcdd2;
+    border: 1px solid rgba(244, 67, 54, 0.7);
 }
 
 .ec-expand-btn {
