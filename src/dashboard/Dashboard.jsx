@@ -3,11 +3,10 @@ import "./Dashboard.css";
 import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
-import ECPage from "../ec_page/ECPage";
 import StudentDashboard from "../student-dashboard/StudentDashboard";
 
 const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState("EC");
+    const [activeTab, setActiveTab] = useState("Performance");
     const [user, setUser] = useState(null);
 
     const adminTabs = ["Performance", "Users"];
@@ -79,7 +78,7 @@ const Dashboard = () => {
                         </button>
                     ))}
 
-                {tabs.map((tab) => (
+                {/* {tabs.map((tab) => (
                     <button
                         key={tab}
                         className={activeTab === tab ? "tab active" : "tab"}
@@ -87,7 +86,7 @@ const Dashboard = () => {
                     >
                         {tab}
                     </button>
-                ))}
+                ))} */}
             </div>
 
             <div className="TabContent">
