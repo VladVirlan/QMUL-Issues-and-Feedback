@@ -441,6 +441,11 @@
     box-shadow: none;
 }
 
+#original-deadline::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
 @keyframes ecStepEnter {
     from {
         opacity: 0;
