@@ -6,9 +6,6 @@ const initialServices = [];
 
 const STATUS_OPTIONS = ['Good', 'Partial', 'No service'];
 
-
-
-
 const Services = () => {
     const [services, setServices] = useState(initialServices);
     const [draftServices, setDraftServices] = useState(

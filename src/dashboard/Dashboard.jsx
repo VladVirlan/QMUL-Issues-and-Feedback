@@ -4,19 +4,14 @@ import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
 import StudentDashboard from "../student-dashboard/StudentDashboard";
+import StaffDashboard from "../staff-dashboard/StaffDashboard";
 import Tickets from "../staff_tabs/Tickets";
-import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("Performance");
     const [user, setUser] = useState(null);
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        getUser();
-    }, []);
-
-    async function getUser() {
+    const getUser = async () => {
         const { data } = await supabase.auth.getUser();
         const authUser = data?.user;
 
@@ -36,9 +31,17 @@ const Dashboard = () => {
             ...authUser,
             role: userData?.role,
         });
-    }
+    };
 
-    const isAdmin = user?.email === "admin@gmail.com";
+    useEffect(() => {
+        getUser();
+    }, []);
+
+    const role = user?.role;
+    const isAdmin = role === "admin";
+    const isStaff = role === "staff";
+    const isStudent = role === "student";
+    const isModuleOrganiser = role === "module_organiser";
 
     const adminTabs = ["Performance", "Users"];
     const staffTabs = ["Tickets"];
@@ -49,10 +52,7 @@ const Dashboard = () => {
         Tickets,
     };
 
-    const visibleTabs = [
-        ...(isAdmin ? adminTabs : []),
-        ...staffTabs,
-    ];
+    const visibleTabs = isAdmin ? [...adminTabs, ...staffTabs] : [];
 
     useEffect(() => {
         if (isAdmin) setActiveTab("Performance");
@@ -68,8 +68,38 @@ const Dashboard = () => {
         return <div className="DashboardLoading">Loading dashboard...</div>;
     }
 
-    if (user && !isAdmin) {
+    if (isStudent) {
         return <StudentDashboard onLogout={handleLogout} />;
+    }
+
+    if (isStaff) {
+        return <StaffDashboard onLogout={handleLogout} />;
+    }
+
+    if (isModuleOrganiser) {
+        return (
+            <div className="DashboardContainer">
+                <div className="Tabs">
+                    <button className="tab active">EC Outcomes</button>
+                </div>
+
+                <div className="TabContent">
+                    <Tickets />
+                </div>
+
+                <button id="LogOutButton" onClick={handleLogout}>
+                    LOG OUT
+                </button>
+            </div>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <div className="DashboardLoading">
+                Your role does not have dashboard access.
+            </div>
+        );
     }
 
     return (
@@ -84,14 +114,6 @@ const Dashboard = () => {
                         {tab}
                     </button>
                 ))}
-
-                <button
-                    style={{ marginLeft: "auto" }}
-                    className="tab"
-                    onClick={() => navigate('/service-check')}
-                >
-                    🔧 Service Status
-                </button>
             </div>
 
             <div className="TabContent">
