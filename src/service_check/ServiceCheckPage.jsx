@@ -15,7 +15,6 @@ const normalizeService = (service, index) => ({
 
 const getStatusClass = (status) => {
   const normalized = status.toLowerCase();
-
   if (normalized === 'good') return 'green';
   if (normalized === 'partial') return 'orange';
   return 'red';
@@ -132,7 +131,5 @@ const ServiceCheckPage = () => {
         </div>
     );
 }
-
-
 
 export default ServiceCheckPage;

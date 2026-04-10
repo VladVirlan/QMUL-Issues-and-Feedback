@@ -4,19 +4,13 @@ import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
 import StudentDashboard from "../student-dashboard/StudentDashboard";
+import Tickets from "../staff_tabs/Tickets";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("Performance");
     const [user, setUser] = useState(null);
-
-    const adminTabs = ["Performance", "Users"];
-
-    const tabContent = {
-        Performance: Performance,
-        Users: Users,
-    };
-
-    const ActiveComponent = tabContent[activeTab];
+    const navigate = useNavigate();
 
     useEffect(() => {
         getUser();
@@ -44,13 +38,27 @@ const Dashboard = () => {
         });
     }
 
-    const isAdmin = user?.role === "admin";
+    const isAdmin = user?.email === "admin@gmail.com";
+
+    const adminTabs = ["Performance", "Users"];
+    const staffTabs = ["Tickets"];
+
+    const tabContent = {
+        Performance,
+        Users,
+        Tickets,
+    };
+
+    const visibleTabs = [
+        ...(isAdmin ? adminTabs : []),
+        ...staffTabs,
+    ];
 
     useEffect(() => {
-        if (isAdmin) {
-            setActiveTab("Performance");
-        }
+        if (isAdmin) setActiveTab("Performance");
     }, [isAdmin]);
+
+    const ActiveComponent = tabContent[activeTab];
 
     async function handleLogout() {
         await supabase.auth.signOut();
@@ -67,18 +75,7 @@ const Dashboard = () => {
     return (
         <div className="DashboardContainer">
             <div className="Tabs">
-                {isAdmin &&
-                    adminTabs.map((tab) => (
-                        <button
-                            key={tab}
-                            className={activeTab === tab ? "tab active" : "tab"}
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-
-                {/* {tabs.map((tab) => (
+                {visibleTabs.map((tab) => (
                     <button
                         key={tab}
                         className={activeTab === tab ? "tab active" : "tab"}
@@ -86,11 +83,19 @@ const Dashboard = () => {
                     >
                         {tab}
                     </button>
-                ))} */}
+                ))}
+
+                <button
+                    style={{ marginLeft: "auto" }}
+                    className="tab"
+                    onClick={() => navigate('/service-check')}
+                >
+                    🔧 Service Status
+                </button>
             </div>
 
             <div className="TabContent">
-                <ActiveComponent />
+                {ActiveComponent && <ActiveComponent />}
             </div>
 
             <button id="LogOutButton" onClick={handleLogout}>
