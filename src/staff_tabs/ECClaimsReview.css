@@ -105,6 +105,21 @@
     margin: 0 0 8px;
 }
 
+.ec-evidence-download-link {
+    border: none;
+    background: transparent;
+    color: #cfe3ff;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+
+.ec-evidence-download-link:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .ECClaimDecisionActions {
     margin-top: 14px;
 }

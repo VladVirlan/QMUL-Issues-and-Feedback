@@ -4,6 +4,16 @@ import { supabase } from "../supabase/supabaseClient";
 import "./ECPage.css";
 import ECForm from "./components/ECForm";
 
+const EVIDENCE_BUCKET = "ec-evidence";
+
+const buildEvidenceFilePath = (userId, fileName) => {
+    const safeFileName = (fileName || "evidence-file")
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    return `${userId}/${Date.now()}-${safeFileName}`;
+};
+
 const status = {
   submitted: "submitted",
   under_review: "under_review",
@@ -51,20 +61,27 @@ const ECPage = () => {
         fetchClaims();
     }, []);
 
-    const handlePendingEvidenceFileChange = (claimId, fileName) => {
+    const handlePendingEvidenceFileChange = (claimId, file) => {
         setEvidenceError("");
         setEvidenceErrorClaimId(null);
         setPendingEvidenceFiles((previous) => ({
             ...previous,
-            [claimId]: fileName,
+            [claimId]: file,
         }));
     };
 
     const handleUploadEvidenceNow = async (claimId) => {
-        const evidenceFileName = pendingEvidenceFiles[claimId];
+        const evidenceFile = pendingEvidenceFiles[claimId];
+        const claim = claims.find((claimItem) => claimItem.id === claimId);
 
-        if (!evidenceFileName) {
+        if (!evidenceFile) {
             setEvidenceError("Please choose an evidence file first.");
+            setEvidenceErrorClaimId(claimId);
+            return;
+        }
+
+        if (!claim?.user_id) {
+            setEvidenceError("Could not find claim owner for evidence upload.");
             setEvidenceErrorClaimId(claimId);
             return;
         }
@@ -73,11 +90,28 @@ const ECPage = () => {
         setEvidenceErrorClaimId(null);
         setSubmittingClaimId(claimId);
 
+        const evidencePath = buildEvidenceFilePath(claim.user_id, evidenceFile.name);
+        const { error: uploadError } = await supabase.storage
+            .from(EVIDENCE_BUCKET)
+            .upload(evidencePath, evidenceFile, {
+                cacheControl: "3600",
+                upsert: false,
+            });
+
+        if (uploadError) {
+            console.error("Error uploading late evidence file:", uploadError);
+            setEvidenceError("Could not upload evidence file. Please try again.");
+            setEvidenceErrorClaimId(claimId);
+            setSubmittingClaimId(null);
+            return;
+        }
+
         const { error } = await supabase
             .from('ec_claims')
             .update({
                 evidence_choice: "upload-now",
-                evidence_file_name: evidenceFileName,
+                evidence_file_name: evidenceFile.name,
+                evidence_file_path: evidencePath,
                 upload_later_confirmed: false,
                 updated_at: new Date().toISOString(),
             })
@@ -93,7 +127,7 @@ const ECPage = () => {
 
         setPendingEvidenceFiles((previous) => ({
             ...previous,
-            [claimId]: "",
+            [claimId]: null,
         }));
 
         await fetchClaims();
@@ -201,13 +235,13 @@ const ECPage = () => {
                                                     onChange={(event) =>
                                                         handlePendingEvidenceFileChange(
                                                             claim.id,
-                                                            event.target.files?.[0]?.name || "",
+                                                            event.target.files?.[0] || null,
                                                         )
                                                     }
                                                 />
                                             </label>    
                                             {pendingEvidenceFiles[claim.id] && (
-                                                <p className="ec-file-name">Selected: {pendingEvidenceFiles[claim.id]}</p>
+                                                <p className="ec-file-name">Selected: {pendingEvidenceFiles[claim.id].name}</p>
                                             )}
                                             <button
                                                 type="button"

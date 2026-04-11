@@ -3,6 +3,7 @@ import { supabase } from "../supabase/supabaseClient";
 import "./ECClaimsReview.css";
 
 const REVIEWABLE_STATUSES = ["submitted", "under_review"];
+const EVIDENCE_BUCKET = "ec-evidence";
 
 const formatStatusLabel = (status) => {
     if (!status) return "unknown";
@@ -26,6 +27,7 @@ const ECClaimsReview = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [updatingClaimId, setUpdatingClaimId] = useState(null);
     const [selectedClaimId, setSelectedClaimId] = useState(null);
+    const [downloadingEvidenceClaimId, setDownloadingEvidenceClaimId] = useState(null);
 
     const fetchClaims = async (staffId) => {
         if (!staffId) {
@@ -166,6 +168,29 @@ const ECClaimsReview = () => {
         setUpdatingClaimId(null);
     };
 
+    const handleDownloadEvidence = async (claim) => {
+        if (!claim?.evidence_file_path) {
+            return;
+        }
+
+        setDownloadingEvidenceClaimId(claim.id);
+        setErrorMessage("");
+
+        const { data, error } = await supabase.storage
+            .from(EVIDENCE_BUCKET)
+            .createSignedUrl(claim.evidence_file_path, 120);
+
+        if (error || !data?.signedUrl) {
+            console.error("Error creating signed URL for evidence download:", error);
+            setErrorMessage("Could not download the evidence file. Please try again.");
+            setDownloadingEvidenceClaimId(null);
+            return;
+        }
+
+        window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+        setDownloadingEvidenceClaimId(null);
+    };
+
     return (
         <div className="ECClaimsReview">
             <div className="ECClaimsReviewHeader">
@@ -223,7 +248,23 @@ const ECClaimsReview = () => {
                                         <p><strong>Impact:</strong> {selectedClaim.impact_type || "Not provided"}</p>
                                         <p><strong>Deadline:</strong> {selectedClaim.deadline || "Not provided"}</p>
                                         <p><strong>Evidence Choice:</strong> {selectedClaim.evidence_choice || "Not provided"}</p>
-                                        <p><strong>Evidence File:</strong> {selectedClaim.evidence_file_name || "Not provided"}</p>
+                                        <p>
+                                            <strong>Evidence File:</strong>{" "}
+                                            {selectedClaim.evidence_file_path && selectedClaim.evidence_file_name ? (
+                                                <button
+                                                    type="button"
+                                                    className="ec-evidence-download-link"
+                                                    disabled={downloadingEvidenceClaimId === selectedClaim.id}
+                                                    onClick={() => handleDownloadEvidence(selectedClaim)}
+                                                >
+                                                    {downloadingEvidenceClaimId === selectedClaim.id
+                                                        ? "Preparing download..."
+                                                        : selectedClaim.evidence_file_name}
+                                                </button>
+                                            ) : (
+                                                "Not provided"
+                                            )}
+                                        </p>
                                         <p><strong>No Evidence Reason:</strong> {selectedClaim.no_evidence_reason || "Not provided"}</p>
 
                                         {REVIEWABLE_STATUSES.includes(selectedClaim.status) ? (

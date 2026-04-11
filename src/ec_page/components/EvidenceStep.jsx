@@ -58,7 +58,7 @@ const EvidenceStep = ({
                         <input
                             id="evidence-file"
                             type="file"
-                            onChange={(event) => onFileChange(event.target.files?.[0]?.name || "")}
+                            onChange={(event) => onFileChange(event.target.files?.[0] || null)}
                         />
                     </label>
                     {evidenceFileName && <p className="ec-file-name">Selected: {evidenceFileName}</p>}

@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 
 const MAX_SELF_CERT_CLAIMS = 3;
+const EVIDENCE_BUCKET = "ec-evidence";
 
 const getRandomItem = (items) => {
     if (!items || items.length === 0) {
@@ -19,6 +20,14 @@ const getRandomItem = (items) => {
 
     const randomIndex = Math.floor(Math.random() * items.length);
     return items[randomIndex];
+};
+
+const buildEvidenceFilePath = (userId, fileName) => {
+    const safeFileName = (fileName || "evidence-file")
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    return `${userId}/${Date.now()}-${safeFileName}`;
 };
 
 const INITIAL_FORM_DATA = {
@@ -32,6 +41,7 @@ const INITIAL_FORM_DATA = {
     impactType: "",
     deadline: "",
     evidenceChoice: "upload-now",
+    evidenceFile: null,
     evidenceFileName: "",
     uploadLaterConfirmed: false,
     noEvidenceReason: "",
@@ -134,7 +144,7 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
         }
 
         if (currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD) {
-            if (formData.evidenceChoice === "upload-now" && !formData.evidenceFileName) {
+            if (formData.evidenceChoice === "upload-now" && !formData.evidenceFile) {
                 setErrorMessage("Please choose an evidence file or select another evidence option.");
                 return false;
             }
@@ -239,6 +249,35 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
             return;
         }
 
+        let uploadedEvidencePath = null;
+        let uploadedEvidenceName = "";
+
+        if (formData.claimType === CLAIM_TYPES.STANDARD && formData.evidenceChoice === "upload-now") {
+            if (!formData.evidenceFile) {
+                setErrorMessage("Please choose an evidence file or select another evidence option.");
+                setIsSubmitting(false);
+                return;
+            }
+
+            const evidencePath = buildEvidenceFilePath(user.id, formData.evidenceFile.name);
+            const { error: evidenceUploadError } = await supabase.storage
+                .from(EVIDENCE_BUCKET)
+                .upload(evidencePath, formData.evidenceFile, {
+                    cacheControl: "3600",
+                    upsert: false,
+                });
+
+            if (evidenceUploadError) {
+                setErrorMessage("Could not upload evidence file. Please try again.");
+                console.error("Error uploading evidence file:", evidenceUploadError);
+                setIsSubmitting(false);
+                return;
+            }
+
+            uploadedEvidencePath = evidencePath;
+            uploadedEvidenceName = formData.evidenceFile.name;
+        }
+
         const { error } = await supabase.from('ec_claims').insert({
             user_id: user.id,
             assigned_staff_id: selectedReviewer.id,
@@ -253,7 +292,8 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
             impact_type: formData.impactType,
             deadline: formData.deadline,
             evidence_choice: formData.selfCertConfirmed ? "no-evidence" : formData.evidenceChoice,
-            evidence_file_name: formData.evidenceFileName,
+            evidence_file_name: uploadedEvidenceName,
+            evidence_file_path: uploadedEvidencePath,
             upload_later_confirmed: formData.uploadLaterConfirmed,
             no_evidence_reason: formData.selfCertConfirmed ? "Not required for self-certification" : formData.noEvidenceReason,
         });
@@ -351,12 +391,18 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
                             onChoiceChange={(value) =>
                                 updateFormData({
                                     evidenceChoice: value,
+                                    evidenceFile: null,
                                     evidenceFileName: "",
                                     uploadLaterConfirmed: false,
                                     noEvidenceReason: "",
                                 })
                             }
-                            onFileChange={(value) => updateFormData({ evidenceFileName: value })}
+                            onFileChange={(file) =>
+                                updateFormData({
+                                    evidenceFile: file,
+                                    evidenceFileName: file?.name || "",
+                                })
+                            }
                             onUploadLaterConfirm={(value) => updateFormData({ uploadLaterConfirmed: value })}
                             onNoEvidenceReasonChange={(value) => updateFormData({ noEvidenceReason: value })}
                         />
