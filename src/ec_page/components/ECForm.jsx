@@ -7,6 +7,7 @@ import EvidenceStep from "./EvidenceStep";
 import ReviewStep from "./ReviewStep";
 
 import { CLAIM_TYPES, CIRCUMSTANCE_OPTIONS, IMPACT_TYPES, MODULE_OPTIONS, STEPS } from "../ecFormConfig";
+import { validateEvidenceFile } from "../evidenceValidation";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 
@@ -101,6 +102,32 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
         setFormData((previous) => ({ ...previous, ...updates }));
     };
 
+    const handleEvidenceFileChange = (file) => {
+        if (!file) {
+            updateFormData({
+                evidenceFile: null,
+                evidenceFileName: "",
+            });
+            return;
+        }
+
+        const validationError = validateEvidenceFile(file);
+        if (validationError) {
+            setErrorMessage(validationError);
+            updateFormData({
+                evidenceFile: null,
+                evidenceFileName: "",
+            });
+            return;
+        }
+
+        setErrorMessage("");
+        updateFormData({
+            evidenceFile: file,
+            evidenceFileName: file.name,
+        });
+    };
+
     const validateCurrentStep = () => {
         if (currentStep === 0) {
             if (!formData.soughtGuidance) {
@@ -147,6 +174,14 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
             if (formData.evidenceChoice === "upload-now" && !formData.evidenceFile) {
                 setErrorMessage("Please choose an evidence file or select another evidence option.");
                 return false;
+            }
+
+            if (formData.evidenceChoice === "upload-now" && formData.evidenceFile) {
+                const validationError = validateEvidenceFile(formData.evidenceFile);
+                if (validationError) {
+                    setErrorMessage(validationError);
+                    return false;
+                }
             }
 
             if (formData.evidenceChoice === "upload-later" && !formData.uploadLaterConfirmed) {
@@ -255,6 +290,13 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
         if (formData.claimType === CLAIM_TYPES.STANDARD && formData.evidenceChoice === "upload-now") {
             if (!formData.evidenceFile) {
                 setErrorMessage("Please choose an evidence file or select another evidence option.");
+                setIsSubmitting(false);
+                return;
+            }
+
+            const validationError = validateEvidenceFile(formData.evidenceFile);
+            if (validationError) {
+                setErrorMessage(validationError);
                 setIsSubmitting(false);
                 return;
             }
@@ -397,12 +439,7 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
                                     noEvidenceReason: "",
                                 })
                             }
-                            onFileChange={(file) =>
-                                updateFormData({
-                                    evidenceFile: file,
-                                    evidenceFileName: file?.name || "",
-                                })
-                            }
+                            onFileChange={handleEvidenceFileChange}
                             onUploadLaterConfirm={(value) => updateFormData({ uploadLaterConfirmed: value })}
                             onNoEvidenceReasonChange={(value) => updateFormData({ noEvidenceReason: value })}
                         />

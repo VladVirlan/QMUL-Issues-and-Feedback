@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient";
+import { EVIDENCE_ACCEPT_ATTRIBUTE, validateEvidenceFile } from "./evidenceValidation";
 
 import "./ECPage.css";
 import ECForm from "./components/ECForm";
@@ -62,6 +63,27 @@ const ECPage = () => {
     }, []);
 
     const handlePendingEvidenceFileChange = (claimId, file) => {
+        if (!file) {
+            setEvidenceError("");
+            setEvidenceErrorClaimId(null);
+            setPendingEvidenceFiles((previous) => ({
+                ...previous,
+                [claimId]: null,
+            }));
+            return;
+        }
+
+        const validationError = validateEvidenceFile(file);
+        if (validationError) {
+            setEvidenceError(validationError);
+            setEvidenceErrorClaimId(claimId);
+            setPendingEvidenceFiles((previous) => ({
+                ...previous,
+                [claimId]: null,
+            }));
+            return;
+        }
+
         setEvidenceError("");
         setEvidenceErrorClaimId(null);
         setPendingEvidenceFiles((previous) => ({
@@ -76,6 +98,13 @@ const ECPage = () => {
 
         if (!evidenceFile) {
             setEvidenceError("Please choose an evidence file first.");
+            setEvidenceErrorClaimId(claimId);
+            return;
+        }
+
+        const validationError = validateEvidenceFile(evidenceFile);
+        if (validationError) {
+            setEvidenceError(validationError);
             setEvidenceErrorClaimId(claimId);
             return;
         }
@@ -232,6 +261,7 @@ const ECPage = () => {
                                                 <input
                                                     id={`late-evidence-file-${claim.id}`}
                                                     type="file"
+                                                    accept={EVIDENCE_ACCEPT_ATTRIBUTE}
                                                     onChange={(event) =>
                                                         handlePendingEvidenceFileChange(
                                                             claim.id,
