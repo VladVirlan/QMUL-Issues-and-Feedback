@@ -7,8 +7,10 @@ import EvidenceStep from "./EvidenceStep";
 import ReviewStep from "./ReviewStep";
 
 import { CLAIM_TYPES, CIRCUMSTANCE_OPTIONS, IMPACT_TYPES, MODULE_OPTIONS, STEPS } from "../ecFormConfig";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../supabase/supabaseClient";
+
+const MAX_SELF_CERT_CLAIMS = 3;
 
 const INITIAL_FORM_DATA = {
     soughtGuidance: "",
@@ -31,6 +33,34 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState(INITIAL_FORM_DATA);
     const [errorMessage, setErrorMessage] = useState("");
+    const [selfCertClaimCount, setSelfCertClaimCount] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        const fetchSelfCertClaimCount = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                setSelfCertClaimCount(0);
+                return;
+            }
+
+            const { count, error } = await supabase
+                .from('ec_claims')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('claim_type', CLAIM_TYPES.SELF_CERTIFICATION);
+
+            if (error) {
+                console.error("Error fetching self-certification claim count:", error);
+                return;
+            }
+
+            setSelfCertClaimCount(count || 0);
+        };
+
+        fetchSelfCertClaimCount();
+    }, []);
 
     const selectedModule = useMemo(
         () => MODULE_OPTIONS.find((moduleItem) => moduleItem.code === formData.moduleCode),
@@ -63,6 +93,14 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
         if (currentStep === 1) {
             if (!formData.claimType) {
                 setErrorMessage("Please select a claim type.");
+                return false;
+            }
+
+            if (
+                formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION
+                && selfCertClaimCount >= MAX_SELF_CERT_CLAIMS
+            ) {
+                setErrorMessage("You have reached the maximum of 3 self-certification EC claims.");
                 return false;
             }
 
@@ -134,11 +172,42 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
             setErrorMessage("You must be logged in to submit a claim.");
+            setIsSubmitting(false);
             return;
+        }
+
+        if (formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
+            const { count, error: countError } = await supabase
+                .from('ec_claims')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('claim_type', CLAIM_TYPES.SELF_CERTIFICATION);
+
+            if (countError) {
+                setErrorMessage("Could not verify your self-certification claim limit. Please try again.");
+                console.error("Error checking self-certification claim limit:", countError);
+                setIsSubmitting(false);
+                return;
+            }
+
+            const nextSelfCertCount = count || 0;
+
+            if (nextSelfCertCount >= MAX_SELF_CERT_CLAIMS) {
+                setErrorMessage("You have reached the maximum of 3 self-certification EC claims.");
+                setSelfCertClaimCount(nextSelfCertCount);
+                setIsSubmitting(false);
+                return;
+            }
         }
 
         const { error } = await supabase.from('ec_claims').insert({
@@ -161,10 +230,17 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
         if (error) {
             setErrorMessage("Something went wrong submitting your claim. Please try again.");
             console.error("Error inserting claim:", error);
+            setIsSubmitting(false);
             return;
         }
 
         setErrorMessage("");
+
+        if (formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
+            setSelfCertClaimCount((previous) => previous + 1);
+        }
+
+        setIsSubmitting(false);
         setIsFormOpen(false);
 
         if (onSubmitSuccess) {
@@ -268,8 +344,8 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
                             Continue
                         </button>
                     ) : (
-                        <button type="button" className="ec-primary-btn" onClick={handleSubmit}>
-                            Submit
+                        <button type="button" className="ec-primary-btn" onClick={handleSubmit} disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting..." : "Submit"}
                         </button>
                     )}
                 </div>
