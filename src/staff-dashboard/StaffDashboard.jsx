@@ -2,24 +2,38 @@ import { useMemo, useState } from "react";
 import "./StaffDashboard.css";
 import Tickets from "../staff_tabs/Tickets";
 import Services from "../components/admin_tabs/Services";
+import ECClaimsReview from "../staff_tabs/ECClaimsReview";
 
-const StaffDashboard = ({ onLogout }) => {
+const StaffDashboard = ({ onLogout, staffRole }) => {
     const tabs = useMemo(
-        () => [
-            {
-                id: "tickets",
-                label: "Tickets",
-                subtitle: "View and manage support tickets",
-                component: Tickets,
-            },
-            {
-                id: "services",
-                label: "Services",
-                subtitle: "Update service health and outages",
-                component: Services,
-            },
-        ],
-        [],
+        () => {
+            const baseTabs = [
+                {
+                    id: "tickets",
+                    label: "Tickets",
+                    subtitle: "View and manage support tickets",
+                    component: Tickets,
+                },
+                {
+                    id: "services",
+                    label: "Services",
+                    subtitle: "Update service health and outages",
+                    component: Services,
+                },
+            ];
+
+            if (staffRole === "SST") {
+                baseTabs.push({
+                    id: "ec-claims",
+                    label: "EC Claims",
+                    subtitle: "Review, approve, or reject EC claims",
+                    component: ECClaimsReview,
+                });
+            }
+
+            return baseTabs;
+        },
+        [staffRole],
     );
 
     const [activeTab, setActiveTab] = useState(tabs[0].id);

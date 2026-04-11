@@ -37,11 +37,14 @@ const Dashboard = () => {
         getUser();
     }, []);
 
-    const role = user?.role;
-    const isAdmin = role === "admin";
-    const isStaff = role === "staff";
-    const isStudent = role === "student";
-    const isModuleOrganiser = role === "module_organiser";
+    const rawRole = (user?.role || "").toString().trim();
+    const normalizedRole = rawRole.toLowerCase();
+    const upperRole = rawRole.toUpperCase();
+
+    const isAdmin = normalizedRole === "admin";
+    const isStaff = ["staff", "sst", "itt", "lt"].includes(normalizedRole);
+    const isStudent = normalizedRole === "student";
+    const isModuleOrganiser = normalizedRole === "module_organiser";
 
     const adminTabs = ["Performance", "Users"];
     const staffTabs = ["Tickets"];
@@ -73,7 +76,7 @@ const Dashboard = () => {
     }
 
     if (isStaff) {
-        return <StaffDashboard onLogout={handleLogout} />;
+        return <StaffDashboard onLogout={handleLogout} staffRole={upperRole} />;
     }
 
     if (isModuleOrganiser) {

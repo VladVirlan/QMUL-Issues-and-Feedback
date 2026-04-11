@@ -1,0 +1,115 @@
+.ECClaimsReview {
+    padding: 12px;
+    color: white;
+}
+
+.ECClaimsReviewHeader {
+    margin-bottom: 12px;
+}
+
+.ECClaimsReviewHeader h2 {
+    margin: 0;
+}
+
+.ECClaimsReviewHeader p {
+    margin-top: 6px;
+    opacity: 0.85;
+}
+
+.ec-review-error {
+    color: #ffd9d9;
+}
+
+.ECClaimsList {
+    display: grid;
+    gap: 12px;
+}
+
+.ECClaimCard {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 14px;
+}
+
+.ECClaimCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.ECClaimCardHeader h3 {
+    margin: 0;
+}
+
+.ec-claim-status {
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.ec-claim-status.approved {
+    background: rgba(36, 139, 97, 0.4);
+}
+
+.ec-claim-status.rejected {
+    background: rgba(188, 56, 56, 0.4);
+}
+
+.ec-claim-status.under_review {
+    background: rgba(241, 171, 62, 0.4);
+}
+
+.ECClaimActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.ECClaimActions button {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+}
+
+.ECClaimActions button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.ECClaimActions .approve {
+    background: rgba(36, 139, 97, 0.8);
+}
+
+.ECClaimActions .reject {
+    background: rgba(188, 56, 56, 0.8);
+}
+
+.ECClaimActions .review {
+    background: rgba(33, 56, 106, 0.85);
+}
+
+.ECClaimDetails {
+    margin-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    padding-top: 12px;
+}
+
+.ECClaimDetails h4 {
+    margin: 0 0 8px;
+}
+
+.ECClaimDecisionActions {
+    margin-top: 14px;
+}
+
+.ec-review-note {
+    margin-top: 12px;
+    opacity: 0.8;
+}

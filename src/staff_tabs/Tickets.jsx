@@ -16,7 +16,7 @@ const Tickets = () => {
       if (user) {
         setUser(user);
         const { data: profile } = await supabase
-          .from("profiles")
+          .from("users")
           .select("role")
           .eq("id", user.id)
           .single();
@@ -86,7 +86,7 @@ const Tickets = () => {
       ticket_id: selectedTicket.id,
       user_id: user.id,
       user_email: user.email,
-      user_role: userRole === "module_organiser" ? "module_organiser" : "staff",
+      user_role: userRole || "staff",
       message: newMessage,
     });
 

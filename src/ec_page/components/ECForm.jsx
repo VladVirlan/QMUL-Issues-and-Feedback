@@ -12,6 +12,15 @@ import { supabase } from "../../supabase/supabaseClient";
 
 const MAX_SELF_CERT_CLAIMS = 3;
 
+const getRandomItem = (items) => {
+    if (!items || items.length === 0) {
+        return null;
+    }
+
+    const randomIndex = Math.floor(Math.random() * items.length);
+    return items[randomIndex];
+};
+
 const INITIAL_FORM_DATA = {
     soughtGuidance: "",
     claimType: CLAIM_TYPES.STANDARD,
@@ -210,8 +219,30 @@ const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
             }
         }
 
+        const { data: reviewerRows, error: reviewerError } = await supabase
+            .from('users')
+            .select('id, role')
+            .in('role', ['SST', 'sst']);
+
+        if (reviewerError) {
+            setErrorMessage("Could not assign your EC claim to a reviewer. Please try again.");
+            console.error("Error fetching SST reviewers:", reviewerError);
+            setIsSubmitting(false);
+            return;
+        }
+
+        const selectedReviewer = getRandomItem(reviewerRows || []);
+
+        if (!selectedReviewer) {
+            setErrorMessage("No SST reviewers are currently available. Please try again later.");
+            setIsSubmitting(false);
+            return;
+        }
+
         const { error } = await supabase.from('ec_claims').insert({
             user_id: user.id,
+            assigned_staff_id: selectedReviewer.id,
+            status: 'submitted',
             sought_guidance: formData.soughtGuidance === "yes",
             claim_type: formData.claimType,
             self_cert_confirmed: formData.selfCertConfirmed,
