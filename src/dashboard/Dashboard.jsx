@@ -4,19 +4,20 @@ import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
 import ECPage from "../ec_page/ECPage";
+import CreateTicket from "../ticket_create_page/CreateTicket";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("EC");
     const [user, setUser] = useState(null);
 
     const adminTabs = ["Performance", "Users"];
-    const tabs = ["EC", "tab2", "tab3"];
+    const tabs = ["EC", "Report_An_Issue", "tab3"];
 
     const tabContent = {
         Performance: Performance,
         Users: Users,
         EC: () => <ECPage />,
-        tab2: () => <p>This is Tab 2 content</p>,
+        Report_An_Issue: () => <CreateTicket />,
         tab3: () => <p>This is Tab 3 content</p>,
     };
 
