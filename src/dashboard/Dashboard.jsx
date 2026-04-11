@@ -47,15 +47,13 @@ const Dashboard = () => {
     const isModuleOrganiser = normalizedRole === "module_organiser";
 
     const adminTabs = ["Performance", "Users"];
-    const staffTabs = ["Tickets"];
 
     const tabContent = {
         Performance,
         Users,
-        Tickets,
     };
 
-    const visibleTabs = isAdmin ? [...adminTabs, ...staffTabs] : [];
+    const visibleTabs = isAdmin ? [...adminTabs] : [];
 
     useEffect(() => {
         if (isAdmin) setActiveTab("Performance");
