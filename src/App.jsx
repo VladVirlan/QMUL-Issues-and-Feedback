@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "./supabase/supabaseClient.js";
 import LoginPage from "./login_page/LoginPage.jsx";
 import Dashboard from "./dashboard/Dashboard.jsx";
+import ECPage from "./ec_page/ECPage.jsx";
+import CreateTicket from "./ticket_create_page/CreateTicket.jsx";
 import ServiceCheckPage from "./service_check/ServiceCheckPage.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 
