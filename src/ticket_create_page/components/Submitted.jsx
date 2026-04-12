@@ -1,17 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 import "./Submitted.css"
 
 const Submitted = ({setPage, ticketType, summary, details}) => {
 
+    
+    const hasInserted = useRef(false);
+
     async function insertTicketToDatabase(){
-        const user = await supabase.auth.getUser();
+
+        if (hasInserted.current){
+            return
+        };
+        hasInserted.current = true;
+
+        const {data: {user}} = await supabase.auth.getUser();
 
         const {error} = await supabase.from('tickets').insert({
             title: summary != "" ? summary : "no title",
             message: details != "" ? details : "no details given",
             status: "submitted",
-            student_email: user.email,
+            student_email: user?.email,
             type: ticketType
         });
     }
@@ -21,9 +30,9 @@ const Submitted = ({setPage, ticketType, summary, details}) => {
     }, []);
 
     return (
-        <div>
+        <div className="main_body_submitted">
             <p>Your Ticket Has Been Submitted</p>
-            <button onClick={() => {setPage("intro_page")}}>Return To Dashboard</button>
+            <button className="button" onClick={() => {setPage("intro_page")}}>Return To Dashboard</button>
         </div>
     );
 };

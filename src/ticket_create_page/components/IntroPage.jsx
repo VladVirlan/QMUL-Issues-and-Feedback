@@ -6,6 +6,18 @@ const IntroPage = ({setPage, setTicketType}) => {
 
     const [tickets, setTickets] = useState([]);
 
+    function displayTicketType(ticketType){
+        if(ticketType == "it"){
+            return "IT Issue"
+        }
+        else if(ticketType == "lab"){
+            return "Lab Issue"
+        }
+        else {
+            return "General Issue"
+        }
+    }
+
     useEffect(() => {
         const getTickets = async () => {
             const {data, error} = await supabase.from('tickets').select('*').order('created_at', {ascending: false});
@@ -21,19 +33,21 @@ const IntroPage = ({setPage, setTicketType}) => {
             <div className="display_tickets" >
                 {tickets.map((ticket) => (
                     <div className="ticket">
-                        <h1>{ticket.title}</h1>
-                        <p>{ticket.type}</p>
-                        <p>{ticket.status}</p>
-                        <p>{ticket.message}</p>
+                        <div className="title_status">
+                            <h1>{ticket.title}</h1>
+                            <p className="ticket_p">{ticket.status}</p>
+                        </div>
+                        <p className="ticket_type">{displayTicketType(ticket.type)}</p>
+                        <p className="ticket_p">{ticket.message}</p>
                     </div>
                 ))}
             </div>
             <div className="submit_tickets">
                 <p>Want to report an issue? Submit a ticket</p>
                 <div className="buttons">
-                    <button onClick={() => {setPage("form"), setTicketType("general")}}>General Ticket</button>
-                    <button onClick={() => {setPage("form"), setTicketType("it")}}>IT Ticket</button>
-                    <button onClick={() => {setPage("form"), setTicketType("lab")}}>Lab Ticket</button>
+                    <button className="button" onClick={() => {setPage("form"), setTicketType("general")}}>General Ticket</button>
+                    <button className="button" onClick={() => {setPage("form"), setTicketType("it")}}>IT Ticket</button>
+                    <button className="button" onClick={() => {setPage("form"), setTicketType("lab")}}>Lab Ticket</button>
                 </div>
             </div>
         </div>

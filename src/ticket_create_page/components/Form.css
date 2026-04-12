@@ -1,9 +1,33 @@
-.main_body {
+.main_body_form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 20px;
-    border: 2px solid;
+    border: none;
     width: 90%;
     height: 90%;
+}
+
+.text_box {
+    resize: none;
+    overflow-y: scroll;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.button {
+    width: fit-content;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #ffffff;
+    color: #21386a;
+    transition: all 0.18s ease;
 }
