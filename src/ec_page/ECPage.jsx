@@ -1,8 +1,26 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient";
+import { EVIDENCE_ACCEPT_ATTRIBUTE, validateEvidenceFile } from "./evidenceValidation";
 
 import "./ECPage.css";
 import ECForm from "./components/ECForm";
+
+const EVIDENCE_BUCKET = "ec-evidence";
+
+const buildEvidenceFilePath = (userId, fileName) => {
+    const safeFileName = (fileName || "evidence-file")
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    return `${userId}/${Date.now()}-${safeFileName}`;
+};
+
+const status = {
+  submitted: "submitted",
+  under_review: "under_review",
+  approved: "approved",
+  rejected: "rejected",
+};
 
 const ECPage = () => {
 
@@ -44,20 +62,55 @@ const ECPage = () => {
         fetchClaims();
     }, []);
 
-    const handlePendingEvidenceFileChange = (claimId, fileName) => {
+    const handlePendingEvidenceFileChange = (claimId, file) => {
+        if (!file) {
+            setEvidenceError("");
+            setEvidenceErrorClaimId(null);
+            setPendingEvidenceFiles((previous) => ({
+                ...previous,
+                [claimId]: null,
+            }));
+            return;
+        }
+
+        const validationError = validateEvidenceFile(file);
+        if (validationError) {
+            setEvidenceError(validationError);
+            setEvidenceErrorClaimId(claimId);
+            setPendingEvidenceFiles((previous) => ({
+                ...previous,
+                [claimId]: null,
+            }));
+            return;
+        }
+
         setEvidenceError("");
         setEvidenceErrorClaimId(null);
         setPendingEvidenceFiles((previous) => ({
             ...previous,
-            [claimId]: fileName,
+            [claimId]: file,
         }));
     };
 
     const handleUploadEvidenceNow = async (claimId) => {
-        const evidenceFileName = pendingEvidenceFiles[claimId];
+        const evidenceFile = pendingEvidenceFiles[claimId];
+        const claim = claims.find((claimItem) => claimItem.id === claimId);
 
-        if (!evidenceFileName) {
+        if (!evidenceFile) {
             setEvidenceError("Please choose an evidence file first.");
+            setEvidenceErrorClaimId(claimId);
+            return;
+        }
+
+        const validationError = validateEvidenceFile(evidenceFile);
+        if (validationError) {
+            setEvidenceError(validationError);
+            setEvidenceErrorClaimId(claimId);
+            return;
+        }
+
+        if (!claim?.user_id) {
+            setEvidenceError("Could not find claim owner for evidence upload.");
             setEvidenceErrorClaimId(claimId);
             return;
         }
@@ -66,11 +119,28 @@ const ECPage = () => {
         setEvidenceErrorClaimId(null);
         setSubmittingClaimId(claimId);
 
+        const evidencePath = buildEvidenceFilePath(claim.user_id, evidenceFile.name);
+        const { error: uploadError } = await supabase.storage
+            .from(EVIDENCE_BUCKET)
+            .upload(evidencePath, evidenceFile, {
+                cacheControl: "3600",
+                upsert: false,
+            });
+
+        if (uploadError) {
+            console.error("Error uploading late evidence file:", uploadError);
+            setEvidenceError("Could not upload evidence file. Please try again.");
+            setEvidenceErrorClaimId(claimId);
+            setSubmittingClaimId(null);
+            return;
+        }
+
         const { error } = await supabase
             .from('ec_claims')
             .update({
                 evidence_choice: "upload-now",
-                evidence_file_name: evidenceFileName,
+                evidence_file_name: evidenceFile.name,
+                evidence_file_path: evidencePath,
                 upload_later_confirmed: false,
                 updated_at: new Date().toISOString(),
             })
@@ -86,7 +156,7 @@ const ECPage = () => {
 
         setPendingEvidenceFiles((previous) => ({
             ...previous,
-            [claimId]: "",
+            [claimId]: null,
         }));
 
         await fetchClaims();
@@ -145,8 +215,8 @@ const ECPage = () => {
                         <div key={claim.id} className="ec-card">
                             <div className="ec-card-flex">
                                 <h2>{claim.reference}</h2>
-                                <div className="ec-card-status">
-                                    <h2>{claim.status}</h2>
+                                <div className={`ec-card-status ${status[claim.status]}`}>
+                                    <h2>{claim.status === "under_review" ? "under review" : claim.status}</h2>
                                 </div>
                             </div>
                             <div className="ec-card-flex">
@@ -191,16 +261,17 @@ const ECPage = () => {
                                                 <input
                                                     id={`late-evidence-file-${claim.id}`}
                                                     type="file"
+                                                    accept={EVIDENCE_ACCEPT_ATTRIBUTE}
                                                     onChange={(event) =>
                                                         handlePendingEvidenceFileChange(
                                                             claim.id,
-                                                            event.target.files?.[0]?.name || "",
+                                                            event.target.files?.[0] || null,
                                                         )
                                                     }
                                                 />
                                             </label>    
                                             {pendingEvidenceFiles[claim.id] && (
-                                                <p className="ec-file-name">Selected: {pendingEvidenceFiles[claim.id]}</p>
+                                                <p className="ec-file-name">Selected: {pendingEvidenceFiles[claim.id].name}</p>
                                             )}
                                             <button
                                                 type="button"

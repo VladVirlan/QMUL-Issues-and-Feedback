@@ -1,3 +1,5 @@
+import { EVIDENCE_ACCEPT_ATTRIBUTE } from "../evidenceValidation";
+
 const EvidenceStep = ({
     evidenceChoice,
     evidenceFileName,
@@ -58,7 +60,8 @@ const EvidenceStep = ({
                         <input
                             id="evidence-file"
                             type="file"
-                            onChange={(event) => onFileChange(event.target.files?.[0]?.name || "")}
+                            accept={EVIDENCE_ACCEPT_ATTRIBUTE}
+                            onChange={(event) => onFileChange(event.target.files?.[0] || null)}
                         />
                     </label>
                     {evidenceFileName && <p className="ec-file-name">Selected: {evidenceFileName}</p>}

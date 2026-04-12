@@ -1,0 +1,124 @@
+.StaffDashboardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 90vh;
+    width: 75vw;
+    padding: 24px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.StaffDashboardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.StaffDashboardHeader h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.StaffDashboardHeader p {
+    opacity: 0.85;
+}
+
+.StaffTabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.staff-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    text-align: left;
+    padding: 0.8rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.staff-tab small {
+    opacity: 0.7;
+    font-size: 0.75rem;
+}
+
+.staff-tab:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.staff-tab.active {
+    background: rgba(33, 56, 106, 0.45);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.StaffTabContent {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.5rem;
+}
+
+.StaffTabContent {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.StaffTabContent::-webkit-scrollbar {
+    width: 0px;
+}
+
+.StaffTabContent:hover::-webkit-scrollbar {
+    width: 8px;
+}
+
+.StaffTabContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.StaffTabContent::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s ease;
+}
+
+.StaffTabContent::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 920px) {
+    .StaffDashboardContainer {
+        width: 92vw;
+        height: 92vh;
+        padding: 18px;
+    }
+
+    .StaffDashboardHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .StaffTabs {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-tab {
+        align-items: flex-start;
+    }
+}

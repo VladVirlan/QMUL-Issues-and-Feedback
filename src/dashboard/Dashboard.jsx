@@ -5,60 +5,110 @@ import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
 import ECPage from "../ec_page/ECPage";
 import CreateTicket from "../ticket_create_page/CreateTicket";
+import StudentDashboard from "../student-dashboard/StudentDashboard";
+import StaffDashboard from "../staff-dashboard/StaffDashboard";
+import Tickets from "../staff_tabs/Tickets";
 
 const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState("EC");
+    const [activeTab, setActiveTab] = useState("Performance");
     const [user, setUser] = useState(null);
 
-    const adminTabs = ["Performance", "Users"];
-    const tabs = ["EC", "Report_An_Issue", "tab3"];
+    const getUser = async () => {
+        const { data } = await supabase.auth.getUser();
+        const authUser = data?.user;
 
-    const tabContent = {
-        Performance: Performance,
-        Users: Users,
-        EC: () => <ECPage />,
-        Report_An_Issue: () => <CreateTicket />,
-        tab3: () => <p>This is Tab 3 content</p>,
+        if (!authUser) return;
+
+        const { data: userData, error } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", authUser.id)
+            .single();
+
+        if (error) {
+            console.error("Error fetching role:", error);
+        }
+
+        setUser({
+            ...authUser,
+            role: userData?.role,
+        });
     };
-
-    const ActiveComponent = tabContent[activeTab];
 
     useEffect(() => {
         getUser();
     }, []);
 
-    async function getUser() {
-        const { data } = await supabase.auth.getUser();
-        setUser(data?.user || null);
-    }
+    const rawRole = (user?.role || "").toString().trim();
+    const normalizedRole = rawRole.toLowerCase();
+    const upperRole = rawRole.toUpperCase();
 
-    const isAdmin = user?.email === "admin@gmail.com";
+    const isAdmin = normalizedRole === "admin";
+    const isStaff = ["staff", "sst", "itt", "lt"].includes(normalizedRole);
+    const isStudent = normalizedRole === "student";
+    const isModuleOrganiser = normalizedRole === "module_organiser";
+
+    const adminTabs = ["Performance", "Users"];
+
+    const tabContent = {
+        Performance,
+        Users,
+    };
+
+    const visibleTabs = isAdmin ? [...adminTabs] : [];
 
     useEffect(() => {
-        if (isAdmin) {
-            setActiveTab("Performance");
-        }
+        if (isAdmin) setActiveTab("Performance");
     }, [isAdmin]);
+
+    const ActiveComponent = tabContent[activeTab];
 
     async function handleLogout() {
         await supabase.auth.signOut();
     }
 
+    if (!user) {
+        return <div className="DashboardLoading">Loading dashboard...</div>;
+    }
+
+    if (isStudent) {
+        return <StudentDashboard onLogout={handleLogout} />;
+    }
+
+    if (isStaff) {
+        return <StaffDashboard onLogout={handleLogout} staffRole={upperRole} />;
+    }
+
+    if (isModuleOrganiser) {
+        return (
+            <div className="DashboardContainer">
+                <div className="Tabs">
+                    <button className="tab active">EC Outcomes</button>
+                </div>
+
+                <div className="TabContent">
+                    <Tickets />
+                </div>
+
+                <button id="LogOutButton" onClick={handleLogout}>
+                    LOG OUT
+                </button>
+            </div>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <div className="DashboardLoading">
+                Your role does not have dashboard access.
+            </div>
+        );
+    }
+
     return (
         <div className="DashboardContainer">
             <div className="Tabs">
-                {isAdmin &&
-                    adminTabs.map((tab) => (
-                        <button
-                            key={tab}
-                            className={activeTab === tab ? "tab active" : "tab"}
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-
-                {tabs.map((tab) => (
+                {visibleTabs.map((tab) => (
                     <button
                         key={tab}
                         className={activeTab === tab ? "tab active" : "tab"}
@@ -70,7 +120,7 @@ const Dashboard = () => {
             </div>
 
             <div className="TabContent">
-                <ActiveComponent />
+                {ActiveComponent && <ActiveComponent />}
             </div>
 
             <button id="LogOutButton" onClick={handleLogout}>
