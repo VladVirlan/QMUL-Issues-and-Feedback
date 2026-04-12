@@ -1,0 +1,9 @@
+.main_body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    border: 2px solid;
+    width: 90%;
+    height: 90%;
+}

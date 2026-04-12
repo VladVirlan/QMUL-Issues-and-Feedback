@@ -1,0 +1,37 @@
+.main_body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    max-height: 90%;
+}
+
+.display_tickets {
+    border: 2px solid;
+    margin: 20px;
+    overflow-y: scroll;
+}
+
+.ticket {
+    border: 2px solid;
+    margin: 10px;
+}
+
+.submit_tickets {
+    border: 2px solid;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+h1 {
+    font-size: medium;
+}
+
+p {
+    font-size: small;
+}
