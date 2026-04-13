@@ -9,6 +9,12 @@ const Tickets = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [assignmentFilter, setAssignmentFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [availableTypes, setAvailableTypes] = useState([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -29,14 +35,49 @@ const Tickets = () => {
   }, []);
 
   useEffect(() => {
+    fetchDistinctTypes();
     fetchTickets();
   }, []);
 
-  async function fetchTickets() {
+  useEffect(() => {
+    fetchTickets();
+  }, [statusFilter, typeFilter, assignmentFilter, searchTerm]);
+
+  async function fetchDistinctTypes() {
     const { data, error } = await supabase
       .from("tickets")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .select("type")
+      .not("type", "is", null);
+    if (!error && data) {
+      const uniqueTypes = [...new Set(data.map(t => t.type).filter(t => t))];
+      setAvailableTypes(uniqueTypes);
+    }
+  }
+
+  async function fetchTickets() {
+    let query = supabase.from("tickets").select("*");
+
+    if (statusFilter !== "all") {
+      query = query.eq("status", statusFilter);
+    }
+    if (typeFilter !== "all") {
+      query = query.eq("type", typeFilter);
+    }
+    if (assignmentFilter === "unassigned") {
+      query = query.is("assigned_to", null);
+    } else if (assignmentFilter === "assigned_to_me" && user) {
+      query = query.eq("assigned_to", user.id);
+    } else if (assignmentFilter === "assigned_to_others") {
+      query = query.not("assigned_to", "is", null);
+      if (user) {
+        query = query.neq("assigned_to", user.id);
+      }
+    }
+    if (searchTerm.trim()) {
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,message.ilike.%${searchTerm}%,student_email.ilike.%${searchTerm}%`);
+    }
+
+    const { data, error } = await query.order("created_at", { ascending: false });
     if (!error) setTickets(data || []);
   }
 
@@ -178,6 +219,39 @@ const Tickets = () => {
     <div className="TicketsPage">
       <div className="TicketsList">
         <h2>All Tickets</h2>
+        
+        <div className="FilterBar">
+          <input
+            type="text"
+            placeholder="Search by title, description, or student email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="SearchInput"
+          />
+          
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="awaiting_information">Awaiting Info</option>
+            <option value="closed">Closed</option>
+          </select>
+          
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="all">All types</option>
+            {availableTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+          
+          <select value={assignmentFilter} onChange={(e) => setAssignmentFilter(e.target.value)}>
+            <option value="all">All tickets</option>
+            <option value="unassigned">Unassigned</option>
+            <option value="assigned_to_me">Assigned to me</option>
+            <option value="assigned_to_others">Assigned to others</option>
+          </select>
+        </div>
+
         {tickets.length === 0 && <p>No tickets found.</p>}
         {tickets.map((ticket) => (
           <div
@@ -187,8 +261,11 @@ const Tickets = () => {
           >
             <h3>{ticket.title}</h3>
             <p>{ticket.description || ticket.message}</p>
-            <span className={`status-badge ${ticket.status}`}>Status: {ticket.status}</span>
-            {ticket.assigned_to && <span className="assigned-to">Assigned</span>}
+            <div className="TicketMeta">
+              <span className={`status-badge ${ticket.status}`}>Status: {ticket.status}</span>
+              {ticket.type && <span className="type-badge">Type: {ticket.type}</span>}
+              {ticket.assigned_to && <span className="assigned-to">Assigned</span>}
+            </div>
           </div>
         ))}
       </div>
@@ -200,6 +277,7 @@ const Tickets = () => {
             <p><strong>Description:</strong> {selectedTicket.description || selectedTicket.message}</p>
             <p><strong>Student email:</strong> {selectedTicket.student_email}</p>
             <p><strong>Current status:</strong> {selectedTicket.status}</p>
+            {selectedTicket.type && <p><strong>Type:</strong> {selectedTicket.type}</p>}
 
             <div className="ActionButtons">
               {!selectedTicket.assigned_to && (
