@@ -11,6 +11,10 @@
     flex-direction: row;
 }
 
+.HeaderRow h1 {
+    font-size: 2rem;
+}
+
 .ServiceIntroContainer {
     width: 100%;
     display: flex;

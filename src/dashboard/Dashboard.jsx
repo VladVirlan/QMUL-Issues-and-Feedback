@@ -3,8 +3,6 @@ import "./Dashboard.css";
 import { supabase } from "../supabase/supabaseClient";
 import Performance from "../components/admin_tabs/Performance";
 import Users from "../components/admin_tabs/Users";
-import ECPage from "../ec_page/ECPage";
-import CreateTicket from "../ticket_create_page/CreateTicket";
 import StudentDashboard from "../student-dashboard/StudentDashboard";
 import StaffDashboard from "../staff-dashboard/StaffDashboard";
 import Tickets from "../staff_tabs/Tickets";

@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import "./StudentDashboard.css";
 import ECPage from "../ec_page/ECPage";
 import ServiceCheckPage from "../service_check/ServiceCheckPage";
+import CreateTicket from "../ticket_create_page/CreateTicket";
+
 
 const StudentDashboard = ({ onLogout }) => {
     const tabs = useMemo(
@@ -17,6 +19,12 @@ const StudentDashboard = ({ onLogout }) => {
                 label: "Service Availability",
                 subtitle: "View current IT service status",
                 component: () => <ServiceCheckPage/>,
+            },
+            {
+                id: "issue-tickets",
+                label: "Issue Tickets",
+                subtitle: "Report issues and track resolutions",
+                component: () => <CreateTicket/>,
             }
         ],
         [],
