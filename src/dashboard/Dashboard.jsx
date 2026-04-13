@@ -6,6 +6,7 @@ import Users from "../components/admin_tabs/Users";
 import StudentDashboard from "../student-dashboard/StudentDashboard";
 import StaffDashboard from "../staff-dashboard/StaffDashboard";
 import Tickets from "../staff_tabs/Tickets";
+import ModuleOrganiser from "../module_organiser/ModuleOrganiser";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("Performance");
@@ -42,9 +43,8 @@ const Dashboard = () => {
     const upperRole = rawRole.toUpperCase();
 
     const isAdmin = normalizedRole === "admin";
-    const isStaff = ["staff", "sst", "itt", "lt"].includes(normalizedRole);
+    const isStaff = ["staff", "sst", "itt", "lt", "module_organiser"].includes(normalizedRole);
     const isStudent = normalizedRole === "student";
-    const isModuleOrganiser = normalizedRole === "module_organiser";
 
     const adminTabs = ["Performance", "Users"];
 
@@ -75,24 +75,6 @@ const Dashboard = () => {
 
     if (isStaff) {
         return <StaffDashboard onLogout={handleLogout} staffRole={upperRole} />;
-    }
-
-    if (isModuleOrganiser) {
-        return (
-            <div className="DashboardContainer">
-                <div className="Tabs">
-                    <button className="tab active">EC Outcomes</button>
-                </div>
-
-                <div className="TabContent">
-                    <Tickets />
-                </div>
-
-                <button id="LogOutButton" onClick={handleLogout}>
-                    LOG OUT
-                </button>
-            </div>
-        );
     }
 
     if (!isAdmin) {

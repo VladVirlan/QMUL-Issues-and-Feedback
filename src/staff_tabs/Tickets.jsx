@@ -164,16 +164,6 @@ const Tickets = () => {
     }
   }
 
-  if (userRole === "module_organiser") {
-    return (
-      <div className="ModuleOrganiserView">
-        <h2>EC Outcomes (Read‑Only)</h2>
-        <p>This is a placeholder for the EC submissions list.</p>
-        <p>As a Module Organiser, you can view but not update tickets.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="TicketsPage">
       <div className="TicketsList">

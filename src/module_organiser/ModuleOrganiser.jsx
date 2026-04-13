@@ -1,4 +1,4 @@
-import "./ModuleOrganizer.css";
+import "./ModuleOrganiser.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
 
