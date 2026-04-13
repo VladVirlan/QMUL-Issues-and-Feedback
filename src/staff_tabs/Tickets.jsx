@@ -2,6 +2,140 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient";
 import "./Tickets.css";
 
+const ModuleOrganiserView = () => {
+  const [modules, setModules] = useState(["CS101", "CS201", "MATH101"]);
+  const [selectedModule, setSelectedModule] = useState("");
+  const [claims, setClaims] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (selectedModule) {
+      fetchECClaims();
+    }
+  }, [selectedModule]);
+
+  async function fetchECClaims() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("ec_claims")
+      .select(`
+        reference,
+        submitted_at,
+        status,
+        claim_type,
+        module_code,
+        circumstance,
+        user_id,
+        summary
+      `)
+      .eq("module_code", selectedModule)
+      .order("submitted_at", { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      const userIds = [...new Set(data.map(c => c.user_id))];
+      const { data: users, error: usersError } = await supabase
+        .from("users")
+        .select("id, email")
+        .in("id", userIds);
+      
+      if (!usersError && users) {
+        const userMap = {};
+        users.forEach(u => { userMap[u.id] = u.email; });
+        const enrichedClaims = data.map(claim => ({
+          ...claim,
+          student_email: userMap[claim.user_id] || "Unknown email"
+        }));
+        setClaims(enrichedClaims);
+      } else {
+        const fallbackClaims = data.map(claim => ({
+          ...claim,
+          student_email: claim.user_id
+        }));
+        setClaims(fallbackClaims);
+      }
+    } else {
+      setClaims([]);
+    }
+    setLoading(false);
+  }
+
+  const getStatusBadge = (status) => {
+    const statusColors = {
+      submitted: "#fef9c3",
+      under_review: "#dbeafe",
+      approved: "#dcfce7",
+      rejected: "#fee2e2"
+    };
+    return {
+      backgroundColor: statusColors[status] || "#e2e8f0",
+      padding: "4px 12px",
+      borderRadius: "20px",
+      fontSize: "0.8rem",
+      fontWeight: "500",
+      display: "inline-block"
+    };
+  };
+
+  return (
+    <div className="ModuleOrganiserView">
+      <h2>EC Outcomes (Read‑Only)</h2>
+      
+      <div className="ModuleSelector">
+        <label>Select Module: </label>
+        <select value={selectedModule} onChange={(e) => setSelectedModule(e.target.value)}>
+          <option value="">-- Choose a module --</option>
+          {modules.map(mod => (
+            <option key={mod} value={mod}>{mod}</option>
+          ))}
+        </select>
+      </div>
+
+      {loading && <p>Loading EC claims...</p>}
+
+      {!loading && selectedModule && claims.length === 0 && (
+        <p>No EC claims found for {selectedModule}.</p>
+      )}
+
+      {!loading && claims.length > 0 && (
+        <div className="ECClaimsTable">
+          <table>
+            <thead>
+              <tr>
+                <th>Student Email</th>
+                <th>EC Reference</th>
+                <th>Submitted</th>
+                <th>Type</th>
+                <th>Circumstance</th>
+                <th>Outcome (Status)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {claims.map(claim => (
+                <tr key={claim.reference}>
+                  <td>{claim.student_email}</td>
+                  <td>{claim.reference}</td>
+                  <td>{new Date(claim.submitted_at).toLocaleDateString()}</td>
+                  <td>{claim.claim_type}</td>
+                  <td>
+                    {claim.circumstance 
+                      ? claim.circumstance.substring(0, 60) + '...' 
+                      : 'No circumstance provided'}
+                  </td>
+                  <td>
+                    <span style={getStatusBadge(claim.status)}>
+                      {claim.status.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Tickets = () => {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -112,6 +246,7 @@ const Tickets = () => {
         user_role: "staff",
         message: "Staff member assigned themselves to this ticket",
       });
+      alert(`📧 [Mock Email] To student: Ticket #${id} has been assigned to you.`);
       fetchTickets();
       if (selectedTicket && selectedTicket.id === id) {
         fetchMessages(id);
@@ -132,6 +267,7 @@ const Tickets = () => {
     });
 
     if (!error) {
+      alert(`📧 [Mock Email] To student: New message on ticket "${selectedTicket.title}"`);
       setNewMessage("");
       fetchMessages(selectedTicket.id);
     }
@@ -166,14 +302,17 @@ const Tickets = () => {
       "awaiting_information",
       "Requested additional information from student"
     );
+    alert(`📧 [Mock Email] To student: More information requested for ticket "${selectedTicket.title}".`);
   }
 
   async function resumeTicket() {
     await updateTicketStatus("in_progress", "Student has replied; resuming ticket");
+    alert(`📧 [Mock Email] To student: Ticket "${selectedTicket.title}" has been resumed.`);
   }
 
   async function closeTicket() {
     await updateTicketStatus("closed", "Ticket resolved and closed");
+    alert(`📧 [Mock Email] To student: Ticket "${selectedTicket.title}" has been closed.`);
   }
 
   async function markUnavailableAndReassign() {
@@ -206,13 +345,7 @@ const Tickets = () => {
   }
 
   if (userRole === "module_organiser") {
-    return (
-      <div className="ModuleOrganiserView">
-        <h2>EC Outcomes (Read‑Only)</h2>
-        <p>This is a placeholder for the EC submissions list.</p>
-        <p>As a Module Organiser, you can view but not update tickets.</p>
-      </div>
-    );
+    return <ModuleOrganiserView />;
   }
 
   return (
