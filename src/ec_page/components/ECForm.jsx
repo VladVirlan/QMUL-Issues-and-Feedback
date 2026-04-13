@@ -1,0 +1,471 @@
+import StepProgress from "./StepProgress";
+import GuidanceStep from "./GuidanceStep";
+import ClaimTypeStep from "./ClaimTypeStep";
+import CircumstancesStep from "./CircumstancesStep";
+import AssessmentImpactStep from "./AssessmentImpactStep";
+import EvidenceStep from "./EvidenceStep";
+import ReviewStep from "./ReviewStep";
+
+import { CLAIM_TYPES, CIRCUMSTANCE_OPTIONS, IMPACT_TYPES, MODULE_OPTIONS, STEPS } from "../ecFormConfig";
+import { validateEvidenceFile } from "../evidenceValidation";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "../../supabase/supabaseClient";
+
+const MAX_SELF_CERT_CLAIMS = 3;
+const EVIDENCE_BUCKET = "ec-evidence";
+
+const getRandomItem = (items) => {
+    if (!items || items.length === 0) {
+        return null;
+    }
+
+    const randomIndex = Math.floor(Math.random() * items.length);
+    return items[randomIndex];
+};
+
+const buildEvidenceFilePath = (userId, fileName) => {
+    const safeFileName = (fileName || "evidence-file")
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    return `${userId}/${Date.now()}-${safeFileName}`;
+};
+
+const INITIAL_FORM_DATA = {
+    soughtGuidance: "",
+    claimType: CLAIM_TYPES.STANDARD,
+    selfCertConfirmed: false,
+    circumstance: "",
+    summary: "",
+    moduleCode: "",
+    assessment: "",
+    impactType: "",
+    deadline: "",
+    evidenceChoice: "upload-now",
+    evidenceFile: null,
+    evidenceFileName: "",
+    uploadLaterConfirmed: false,
+    noEvidenceReason: "",
+};
+
+const ECForm = ({ setIsFormOpen, onSubmitSuccess }) => {
+
+    const [currentStep, setCurrentStep] = useState(0);
+    const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [selfCertClaimCount, setSelfCertClaimCount] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        const fetchSelfCertClaimCount = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                setSelfCertClaimCount(0);
+                return;
+            }
+
+            const { count, error } = await supabase
+                .from('ec_claims')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('claim_type', CLAIM_TYPES.SELF_CERTIFICATION);
+
+            if (error) {
+                console.error("Error fetching self-certification claim count:", error);
+                return;
+            }
+
+            setSelfCertClaimCount(count || 0);
+        };
+
+        fetchSelfCertClaimCount();
+    }, []);
+
+    const selectedModule = useMemo(
+        () => MODULE_OPTIONS.find((moduleItem) => moduleItem.code === formData.moduleCode),
+        [formData.moduleCode],
+    );
+
+    const visibleSteps =
+        formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION
+        ? STEPS.filter((step) => step !== "Evidence")
+        : STEPS;
+
+    const activeStepLabel = STEPS[currentStep];
+    const stepTransitionKey = `${currentStep}-${formData.claimType}`;
+    const moduleLabel = selectedModule
+        ? `${selectedModule.code} - ${selectedModule.name}`
+        : "Not selected";
+
+    const updateFormData = (updates) => {
+        setFormData((previous) => ({ ...previous, ...updates }));
+    };
+
+    const handleEvidenceFileChange = (file) => {
+        if (!file) {
+            updateFormData({
+                evidenceFile: null,
+                evidenceFileName: "",
+            });
+            return;
+        }
+
+        const validationError = validateEvidenceFile(file);
+        if (validationError) {
+            setErrorMessage(validationError);
+            updateFormData({
+                evidenceFile: null,
+                evidenceFileName: "",
+            });
+            return;
+        }
+
+        setErrorMessage("");
+        updateFormData({
+            evidenceFile: file,
+            evidenceFileName: file.name,
+        });
+    };
+
+    const validateCurrentStep = () => {
+        if (currentStep === 0) {
+            if (!formData.soughtGuidance) {
+                setErrorMessage("Please select whether you have sought guidance.");
+                return false;
+            }
+        }
+
+        if (currentStep === 1) {
+            if (!formData.claimType) {
+                setErrorMessage("Please select a claim type.");
+                return false;
+            }
+
+            if (
+                formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION
+                && selfCertClaimCount >= MAX_SELF_CERT_CLAIMS
+            ) {
+                setErrorMessage("You have reached the maximum of 3 self-certification EC claims.");
+                return false;
+            }
+
+            if (formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION && !formData.selfCertConfirmed) {
+                setErrorMessage("Please confirm that you understand the self-certification criteria.");
+                return false;
+            }
+        }
+
+        if (currentStep === 2) {
+            if (!formData.circumstance || !formData.summary.trim()) {
+                setErrorMessage("Please complete the circumstances dropdown and summary.");
+                return false;
+            }
+        }
+
+        if (currentStep === 3) {
+            if (!formData.moduleCode || !formData.assessment || !formData.impactType || !formData.deadline) {
+                setErrorMessage("Please complete module, assessment, impact type, and original deadline.");
+                return false;
+            }
+        }
+
+        if (currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD) {
+            if (formData.evidenceChoice === "upload-now" && !formData.evidenceFile) {
+                setErrorMessage("Please choose an evidence file or select another evidence option.");
+                return false;
+            }
+
+            if (formData.evidenceChoice === "upload-now" && formData.evidenceFile) {
+                const validationError = validateEvidenceFile(formData.evidenceFile);
+                if (validationError) {
+                    setErrorMessage(validationError);
+                    return false;
+                }
+            }
+
+            if (formData.evidenceChoice === "upload-later" && !formData.uploadLaterConfirmed) {
+                setErrorMessage("Please confirm that you understand claims will not progress until evidence is uploaded.");
+                return false;
+            }
+
+            if (formData.evidenceChoice === "no-evidence" && !formData.noEvidenceReason.trim()) {
+                setErrorMessage("Please explain why no evidence is being provided.");
+                return false;
+            }
+        }
+
+        setErrorMessage("");
+        return true;
+    };
+
+    const handleNext = () => {
+        const isValid = validateCurrentStep();
+
+        if (!isValid) {
+            return;
+        }
+
+        if (currentStep === 3 && formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
+            setCurrentStep(5);
+            return;
+        }
+
+        setCurrentStep((previous) => Math.min(previous + 1, 5));
+    };
+
+    const handleBack = () => {
+        setErrorMessage("");
+
+        if (currentStep === 5 && formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
+            setCurrentStep(3);
+            return;
+        }
+
+        setCurrentStep((previous) => Math.max(previous - 1, 0));
+    };
+
+    const handleSubmit = async () => {
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            setErrorMessage("You must be logged in to submit a claim.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
+            const { count, error: countError } = await supabase
+                .from('ec_claims')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('claim_type', CLAIM_TYPES.SELF_CERTIFICATION);
+
+            if (countError) {
+                setErrorMessage("Could not verify your self-certification claim limit. Please try again.");
+                console.error("Error checking self-certification claim limit:", countError);
+                setIsSubmitting(false);
+                return;
+            }
+
+            const nextSelfCertCount = count || 0;
+
+            if (nextSelfCertCount >= MAX_SELF_CERT_CLAIMS) {
+                setErrorMessage("You have reached the maximum of 3 self-certification EC claims.");
+                setSelfCertClaimCount(nextSelfCertCount);
+                setIsSubmitting(false);
+                return;
+            }
+        }
+
+        const { data: reviewerRows, error: reviewerError } = await supabase
+            .from('users')
+            .select('id, role')
+            .in('role', ['SST', 'sst']);
+
+        if (reviewerError) {
+            setErrorMessage("Could not assign your EC claim to a reviewer. Please try again.");
+            console.error("Error fetching SST reviewers:", reviewerError);
+            setIsSubmitting(false);
+            return;
+        }
+
+        const selectedReviewer = getRandomItem(reviewerRows || []);
+
+        if (!selectedReviewer) {
+            setErrorMessage("No SST reviewers are currently available. Please try again later.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        let uploadedEvidencePath = null;
+        let uploadedEvidenceName = "";
+
+        if (formData.claimType === CLAIM_TYPES.STANDARD && formData.evidenceChoice === "upload-now") {
+            if (!formData.evidenceFile) {
+                setErrorMessage("Please choose an evidence file or select another evidence option.");
+                setIsSubmitting(false);
+                return;
+            }
+
+            const validationError = validateEvidenceFile(formData.evidenceFile);
+            if (validationError) {
+                setErrorMessage(validationError);
+                setIsSubmitting(false);
+                return;
+            }
+
+            const evidencePath = buildEvidenceFilePath(user.id, formData.evidenceFile.name);
+            const { error: evidenceUploadError } = await supabase.storage
+                .from(EVIDENCE_BUCKET)
+                .upload(evidencePath, formData.evidenceFile, {
+                    cacheControl: "3600",
+                    upsert: false,
+                });
+
+            if (evidenceUploadError) {
+                setErrorMessage("Could not upload evidence file. Please try again.");
+                console.error("Error uploading evidence file:", evidenceUploadError);
+                setIsSubmitting(false);
+                return;
+            }
+
+            uploadedEvidencePath = evidencePath;
+            uploadedEvidenceName = formData.evidenceFile.name;
+        }
+
+        const { error } = await supabase.from('ec_claims').insert({
+            user_id: user.id,
+            assigned_staff_id: selectedReviewer.id,
+            status: 'submitted',
+            sought_guidance: formData.soughtGuidance === "yes",
+            claim_type: formData.claimType,
+            self_cert_confirmed: formData.selfCertConfirmed,
+            circumstance: formData.circumstance,
+            summary: formData.summary,
+            module_code: formData.moduleCode,
+            assessment: formData.assessment,
+            impact_type: formData.impactType,
+            deadline: formData.deadline,
+            evidence_choice: formData.selfCertConfirmed ? "no-evidence" : formData.evidenceChoice,
+            evidence_file_name: uploadedEvidenceName,
+            evidence_file_path: uploadedEvidencePath,
+            upload_later_confirmed: formData.uploadLaterConfirmed,
+            no_evidence_reason: formData.selfCertConfirmed ? "Not required for self-certification" : formData.noEvidenceReason,
+        });
+
+        if (error) {
+            setErrorMessage("Something went wrong submitting your claim. Please try again.");
+            console.error("Error inserting claim:", error);
+            setIsSubmitting(false);
+            return;
+        }
+
+        setErrorMessage("");
+
+        if (formData.claimType === CLAIM_TYPES.SELF_CERTIFICATION) {
+            setSelfCertClaimCount((previous) => previous + 1);
+        }
+
+        setIsSubmitting(false);
+        setIsFormOpen(false);
+
+        if (onSubmitSuccess) {
+            await onSubmitSuccess();
+        }
+    };
+
+    return (
+        <>
+            <div className="ec-header">
+                <h1>Extenuating Circumstances Application</h1>
+                <p>Complete each section to submit your claim. You can review details before final submission.</p>
+            </div>
+
+            <div className="ec-form-content">
+                <StepProgress steps={visibleSteps} activeStep={activeStepLabel} />
+
+                {errorMessage && (
+                    <div className="ec-inline-alert ec-inline-alert-error" role="alert">
+                        {errorMessage}
+                    </div>
+                )}
+
+                <div key={stepTransitionKey} className="ec-step-content" aria-live="polite">
+                    {currentStep === 0 && (
+                        <GuidanceStep
+                            soughtGuidance={formData.soughtGuidance}
+                            onChange={(value) => updateFormData({ soughtGuidance: value })}
+                        />
+                    )}
+
+                    {currentStep === 1 && (
+                        <ClaimTypeStep
+                            claimType={formData.claimType}
+                            selfCertConfirmed={formData.selfCertConfirmed}
+                            onTypeChange={(value) =>
+                                updateFormData({
+                                    claimType: value,
+                                    selfCertConfirmed: value === CLAIM_TYPES.SELF_CERTIFICATION ? formData.selfCertConfirmed : false,
+                                })
+                            }
+                            onSelfCertConfirm={(value) => updateFormData({ selfCertConfirmed: value })}
+                        />
+                    )}
+
+                    {currentStep === 2 && (
+                        <CircumstancesStep
+                            circumstance={formData.circumstance}
+                            summary={formData.summary}
+                            circumstances={CIRCUMSTANCE_OPTIONS}
+                            onCircumstanceChange={(value) => updateFormData({ circumstance: value })}
+                            onSummaryChange={(value) => updateFormData({ summary: value })}
+                        />
+                    )}
+
+                    {currentStep === 3 && (
+                        <AssessmentImpactStep
+                            modules={MODULE_OPTIONS}
+                            moduleCode={formData.moduleCode}
+                            assessment={formData.assessment}
+                            impactType={formData.impactType}
+                            deadline={formData.deadline}
+                            impactTypes={IMPACT_TYPES}
+                            onModuleChange={(value) => updateFormData({ moduleCode: value, assessment: "" })}
+                            onAssessmentChange={(value) => updateFormData({ assessment: value })}
+                            onImpactTypeChange={(value) => updateFormData({ impactType: value })}
+                            onDeadlineChange={(value) => updateFormData({ deadline: value })}
+                        />
+                    )}
+
+                    {currentStep === 4 && formData.claimType === CLAIM_TYPES.STANDARD && (
+                        <EvidenceStep
+                            evidenceChoice={formData.evidenceChoice}
+                            evidenceFileName={formData.evidenceFileName}
+                            uploadLaterConfirmed={formData.uploadLaterConfirmed}
+                            noEvidenceReason={formData.noEvidenceReason}
+                            onChoiceChange={(value) =>
+                                updateFormData({
+                                    evidenceChoice: value,
+                                    evidenceFile: null,
+                                    evidenceFileName: "",
+                                    uploadLaterConfirmed: false,
+                                    noEvidenceReason: "",
+                                })
+                            }
+                            onFileChange={handleEvidenceFileChange}
+                            onUploadLaterConfirm={(value) => updateFormData({ uploadLaterConfirmed: value })}
+                            onNoEvidenceReasonChange={(value) => updateFormData({ noEvidenceReason: value })}
+                        />
+                    )}
+
+                    {currentStep === 5 && <ReviewStep formData={formData} moduleLabel={moduleLabel} />}
+                </div>
+
+                <div className="ec-actions">
+                    <button type="button" className="ec-secondary-btn" onClick={handleBack} disabled={currentStep === 0}>
+                        Back
+                    </button>
+
+                    {currentStep < 5 ? (
+                        <button type="button" className="ec-primary-btn" onClick={handleNext}>
+                            Continue
+                        </button>
+                    ) : (
+                        <button type="button" className="ec-primary-btn" onClick={handleSubmit} disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting..." : "Submit"}
+                        </button>
+                    )}
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default ECForm

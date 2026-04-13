@@ -1,0 +1,35 @@
+.TicketsPage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.TicketsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.TicketCard {
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    cursor: pointer;
+}
+
+.TicketDetails {
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+}
+
+.TicketDetails button {
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 80px;
+    margin-top: 10px;
+}

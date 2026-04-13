@@ -1,0 +1,187 @@
+.Services
+{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+
+.ServicesContainer{
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ServicesCard {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    gap: 1rem;
+}
+
+.ServicesCard:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ServicesCardHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ServicesCardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.35s ease;
+}
+
+.ServicesCard.isOpen .ServicesCardContent {
+    max-height: 360px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.ServicesCardContentSection
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ServicesSelect {
+    width: fit-content;
+    min-width: 150px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.ServicesSelect select {
+    outline: none;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ServicesSelect:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ServicesSelect option {
+    color: #ffffff;
+    background: #26a0ca;
+}
+.ServicesTextbox {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+
+.ServicesTextbox:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.UpdateButton {
+    width: fit-content;
+    margin-top: 4px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.UpdateButton:hover {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.UpdateButton:active {
+    transform: scale(0.96);
+    animation: updateClickPulse 0.2s ease;
+}
+
+.UpdateButton:disabled {
+    cursor: wait;
+    opacity: 0.75;
+}
+
+.UpdateButton.isUpdated {
+    background: rgba(76, 209, 55, 0.18);
+    border-color: rgba(76, 209, 55, 0.4);
+    color: #4cd137;
+}
+
+.UpdateFeedback {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.UpdateFeedback.success {
+    color: #4cd137;
+}
+
+.UpdateFeedback.error {
+    color: #ff7675;
+}
+
+.status {
+    width: fit-content;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-transform: capitalize;
+    border: 1px solid transparent;
+}
+
+.status.green {
+    background-color: rgba(76, 209, 55, 0.15);
+    color: #4cd137;
+    border-color: rgba(76, 209, 55, 0.3);
+}
+
+.status.orange {
+    background-color: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.status.red {
+    background-color: rgba(255, 118, 117, 0.15);
+    color: #ff7675;
+    border-color: rgba(255, 118, 117, 0.3);
+}

@@ -1,0 +1,407 @@
+/* Main container */
+.PerformanceContainer {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Header */
+.HeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.refreshBtn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.refreshBtn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Last Updated */
+.lastUpdated {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    margin-top: -15px;
+}
+
+.loadingText {
+    position: absolute;
+    top: 50px;
+    right: 0px;
+
+    font-size: 0.85rem;
+    opacity: 0.7;
+
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 10px;
+    border-radius: 6px;
+
+    backdrop-filter: blur(6px);
+}
+
+/* Metrics */
+.MetricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.MetricCard {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 20px;
+    border-radius: 14px;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.MetricCard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.MetricCard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.08),
+        transparent
+    );
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.MetricCard:hover::before {
+    opacity: 1;
+}
+
+.MetricCard p {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+}
+
+.MetricCard h3 {
+    margin-top: 8px;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.MetricCardDesc {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Trend Indicators */
+.trend {
+    font-size: 1rem;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+.trend.up {
+    color: #4caf50;
+}
+
+.trend.down {
+    color: #e53935;
+}
+
+/* Section Styling */
+.StatusSection,
+.ActionsSection,
+.InfoSection {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Section Headers */
+.StatusSection h3,
+.ActionsSection h3,
+.InfoSection h3 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Status Rows */
+.StatusRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.StatusRow:last-child {
+    border-bottom: none;
+}
+
+.status {
+    font-weight: 600;
+}
+
+/* Status Colors */
+.status.green {
+    color: #4caf50;
+}
+
+.status.orange {
+    color: #ff9800;
+}
+
+.status.red {
+    color: #f44336;
+}
+
+/* Buttons */
+.primary,
+.danger {
+    padding: 10px 14px;
+    border-radius: 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    width: 100%;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition: all 0.25s ease;
+
+    position: relative;
+    overflow: hidden;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.primary {
+    background: linear-gradient(
+        135deg,
+        rgba(28, 181, 224, 0.35),
+        rgba(46, 125, 50, 0.6)
+    );
+
+    border-color: rgba(28, 181, 224, 0.35);
+}
+
+.danger {
+    background: linear-gradient(
+        135deg,
+        rgba(229, 57, 53, 0.5),
+        rgba(183, 28, 28, 0.7)
+    );
+
+    border-color: rgba(229, 57, 53, 0.4);
+}
+
+.primary:hover,
+.danger:hover {
+    transform: translateY(-2px) scale(1.02);
+
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.35),
+        0 0 18px rgba(28, 181, 224, 0.25);
+}
+
+.primary:active,
+.danger:active {
+    transform: translateY(0px) scale(0.98);
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.primary::before,
+.danger::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent
+    );
+
+    transform: skewX(-20deg);
+    transition: all 0.5s ease;
+}
+
+.primary:hover::before,
+.danger:hover::before {
+    left: 130%;
+}
+
+/* Maintenance */
+.MaintenanceState {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Info section */
+.InfoSection p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Transition */
+.MetricsGrid,
+.HeaderRow,
+.StatusRow {
+    transition: all 0.3s ease;
+}
+
+/* Modern Scrollbar Styling */
+.PerformanceContainer {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.PerformanceContainer::-webkit-scrollbar {
+    width: 0px;
+}
+
+.PerformanceContainer:hover::-webkit-scrollbar {
+    width: 8px;
+}
+
+.PerformanceContainer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.PerformanceContainer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s ease;
+}
+
+.PerformanceContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Tablet View */
+@media (max-width: 768px) {
+    .PerformanceContainer {
+        gap: 25px;
+    }
+
+    .loadingText {
+        top: 40px;
+        right: 0px;
+        font-size: 0.8rem;
+    }
+
+    .MetricsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .HeaderRow h2 {
+        font-size: 1.4rem;
+    }
+
+    .MetricCard {
+        padding: 18px;
+    }
+
+    .MetricCard h3 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Mobile View */
+@media (max-width: 425px) {
+    .PerformanceContainer {
+        flex: 1;
+        height: 70vh;
+        overflow-y: auto;
+        padding-right: 6px;
+        gap: 20px;
+        scroll-behavior: smooth;
+    }
+
+    .HeaderRow {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .refreshBtn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .MetricsGrid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .MetricCard {
+        padding: 16px;
+    }
+
+    .MetricCard h3 {
+        font-size: 1.3rem;
+    }
+
+    .StatusSection,
+    .ActionsSection,
+    .InfoSection {
+        padding: 16px;
+    }
+
+    span {
+        font-size: 1rem;
+    }
+
+    span.status {
+        font-size: 1rem;
+    }
+
+    span.trend {
+        font-size: 0.9rem;
+    }
+
+    .loadingText {
+        position: static;
+        margin-top: 5px;
+        align-self: flex-start;
+    }
+}
