@@ -15,7 +15,8 @@ const ModuleOrganiser = () => {
         const { data, error } = await supabase
             .from("module_organizer")
             .select("*")
-            .eq("module_organiser_id", TEST_UUID);
+            .eq("module_organiser_id", TEST_UUID)
+            .order("date", { ascending: true });
 
         if (!error) setEcs(data);
     };
