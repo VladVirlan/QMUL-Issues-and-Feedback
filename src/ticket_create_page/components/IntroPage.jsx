@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 import "./IntroPage.css";
 
-const IntroPage = ({setPage, setTicketType}) => {
+const IntroPage = ({setPage, setTicketType, setTicket}) => {
 
     const [tickets, setTickets] = useState([]);
 
@@ -32,14 +32,15 @@ const IntroPage = ({setPage, setTicketType}) => {
         <div className="main_body">
             <div className="display_tickets" >
                 {tickets.map((ticket) => (
-                    <div className="ticket">
+                    <button className="ticket" onClick={() => {setPage("ticket_details"); setTicket(ticket)}}>
                         <div className="title_status">
                             <h1>{ticket.title}</h1>
+                            <p className="ticket_type">{displayTicketType(ticket.type)}</p>
                             <p className="ticket_p">{ticket.status}</p>
                         </div>
-                        <p className="ticket_type">{displayTicketType(ticket.type)}</p>
+                        <p className="ticket_email">{ticket.student_email}</p>
                         <p className="ticket_p">{ticket.message}</p>
-                    </div>
+                    </button>
                 ))}
             </div>
             <div className="submit_tickets">
