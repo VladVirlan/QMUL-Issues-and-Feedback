@@ -43,7 +43,9 @@ const Dashboard = () => {
     const upperRole = rawRole.toUpperCase();
 
     const isAdmin = normalizedRole === "admin";
-    const isStaff = ["staff", "sst", "itt", "lt", "module_organiser"].includes(normalizedRole);
+    const isStaff = ["staff", "sst", "its", "lt", "module_organiser"].includes(
+        normalizedRole,
+    );
     const isStudent = normalizedRole === "student";
 
     const adminTabs = ["Performance", "Users"];

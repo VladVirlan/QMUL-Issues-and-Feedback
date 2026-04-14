@@ -146,8 +146,10 @@ const Users = () => {
                             }
                         >
                             <option value="admin">Admin</option>
-                            <option value="staff">Staff</option>
-                            <option value="user">User</option>
+                            <option value="sst">Student Support</option>
+                            <option value="its">IT Support</option>
+                            <option value="lt">Lab Technician</option>
+                            <option value="student">Student</option>
                         </select>
 
                         <div className="ActionsRow">
@@ -202,8 +204,10 @@ const Users = () => {
                     }
                 >
                     <option value="admin">Admin</option>
-                    <option value="staff">Staff</option>
-                    <option value="user">User</option>
+                    <option value="sst">Student Support</option>
+                    <option value="its">IT Support</option>
+                    <option value="lt">Lab Technician</option>
+                    <option value="student">Student</option>
                 </select>
 
                 <button
