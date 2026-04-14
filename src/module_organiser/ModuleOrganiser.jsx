@@ -2,7 +2,7 @@ import "./ModuleOrganiser.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
 
-const TEST_UUID = "ea963eff-8126-4940-adcf-fbfe887cb572";
+const TEST_UUID = "b2d6aafa-216f-4065-9c4c-b8fde9bea4f2";
 
 const ModuleOrganiser = () => {
     const [ecs, setEcs] = useState([]);
