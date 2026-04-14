@@ -243,9 +243,11 @@ const Users = () => {
 
             <div className="InfoSection">
                 <h3>Permissions Info</h3>
-                <p>Admin: Full access</p>
-                <p>Staff: Limited management</p>
-                <p>User: Basic access</p>
+                <p>Admin: Full system control</p>
+                <p>Student Support: Manage student issues</p>
+                <p>IT Support: Handle technical problems</p>
+                <p>Lab Technician: Manage lab-specific issues</p>
+                <p>Student: Basic system access</p>
             </div>
         </div>
     );
