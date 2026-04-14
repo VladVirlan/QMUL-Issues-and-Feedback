@@ -4,13 +4,24 @@
     justify-content: center;
     gap: 20px;
     border: none;
-    width: 90%;
+    width: 100%;
     height: 90%;
+}
+
+label {
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+input {
+    border-color: #21386a;
 }
 
 .text_box {
     resize: none;
     overflow-y: scroll;
+    border-style: solid;
+    border-color: #21386a;
 }
 
 .buttons {
