@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabase/supabaseClient";
+import SearchBar from "../search_bar/SearchBar";
 import "./Users.css";
 
 const Users = () => {
@@ -7,6 +8,7 @@ const Users = () => {
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(new Date());
+    const [searchQuery, setSearchQuery] = useState("");
     const [newUser, setNewUser] = useState({
         email: "",
         role: "user",
@@ -100,6 +102,16 @@ const Users = () => {
         }
     };
 
+    const filteredUsers = users.filter((user) => {
+        const query = searchQuery.toLowerCase();
+
+        return (
+            user.email?.toLowerCase().includes(query) ||
+            user.role?.toLowerCase().includes(query) ||
+            user.status?.toLowerCase().includes(query)
+        );
+    });
+
     return (
         <div className="UsersContainer">
             <div className="HeaderRow">
@@ -115,8 +127,18 @@ const Users = () => {
 
             {loading && <div className="loadingText">Loading users...</div>}
 
+            <SearchBar
+                placeholder="Search by email, role, or status..."
+                onChange={(value) => setSearchQuery(value)}
+            />
+
+            <p className="usersFound">{filteredUsers.length} users found</p>
+            {filteredUsers.length === 0 && !loading && (
+                <p className="noneFound">No users found</p>
+            )}
+
             <div className="UsersList">
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                     <div key={user.id} className="UserCard">
                         <h3 className="UserEmail">{user.email}</h3>
 
@@ -146,8 +168,10 @@ const Users = () => {
                             }
                         >
                             <option value="admin">Admin</option>
-                            <option value="staff">Staff</option>
-                            <option value="user">User</option>
+                            <option value="sst">Student Support</option>
+                            <option value="its">IT Support</option>
+                            <option value="lt">Lab Technician</option>
+                            <option value="student">Student</option>
                         </select>
 
                         <div className="ActionsRow">
@@ -202,8 +226,10 @@ const Users = () => {
                     }
                 >
                     <option value="admin">Admin</option>
-                    <option value="staff">Staff</option>
-                    <option value="user">User</option>
+                    <option value="sst">Student Support</option>
+                    <option value="its">IT Support</option>
+                    <option value="lt">Lab Technician</option>
+                    <option value="student">Student</option>
                 </select>
 
                 <button

@@ -41,10 +41,33 @@
     background: rgba(255, 255, 255, 0.15);
 }
 
+.refreshBtn:active {
+    transform: scale(0.97);
+}
+
 /* Loading */
 .UsersContainer .loadingText {
     top: 60px;
     right: 12.5px;
+}
+
+/* Users Found */
+.usersFound {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.3px;
+    font-weight: 500;
+}
+
+.noneFound {
+    text-align: center;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
 }
 
 /* Users List */

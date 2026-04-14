@@ -3,6 +3,7 @@ import "./StaffDashboard.css";
 import Tickets from "../staff_tabs/Tickets";
 import Services from "../components/admin_tabs/Services";
 import ECClaimsReview from "../staff_tabs/ECClaimsReview";
+import ModuleOrganiser from "../module_organiser/ModuleOrganiser";
 
 const StaffDashboard = ({ onLogout, staffRole }) => {
     const tabs = useMemo(
@@ -40,6 +41,33 @@ const StaffDashboard = ({ onLogout, staffRole }) => {
 
     const activeTabItem = tabs.find((tab) => tab.id === activeTab) || tabs[0];
     const ActiveComponent = activeTabItem.component;
+
+    if (staffRole === "MODULE_ORGANISER") {
+        return (
+            <div className="StaffDashboardContainer">
+                <div className="StaffDashboardHeader">
+                    <div>
+                        <h1>Module Organiser Dashboard</h1>
+                        <p>Manage module-related tasks and information.</p>
+                    </div>
+                    <button id="LogOutButton" onClick={onLogout}>
+                        LOG OUT
+                    </button>
+                </div>
+
+                <div className="StaffTabs">
+                    <button className="staff-tab active">
+                        <span>EC Submissions</span>
+                        <small>View extenuating circumstance submissions</small>
+                    </button>
+                </div>
+
+                <div className="StaffTabContent">
+                    <ModuleOrganiser />
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="StaffDashboardContainer">
