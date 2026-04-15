@@ -1,7 +1,7 @@
 import "./Form.css"
 import { useEffect} from "react";
 
-const Form = ({setPage, ticketType, setSummary, setDetails}) => {
+const Form = ({setPage, ticketType, summary, details, setSummary, setDetails}) => {
 
     function displayTicketType(){
         if(ticketType == "it"){
@@ -27,7 +27,15 @@ const Form = ({setPage, ticketType, setSummary, setDetails}) => {
             <textarea className="text_box" rows="10" placeholder="Explain the issue in detail here, provide the location if necessary." required onChange={(e) => setDetails(e.target.value)}></textarea>
             <div className="buttons">
                 <button className="button" onClick={() => {setPage("intro_page")}}>Go Back</button>
-                <button className="button" type="submit" onClick={() => {if(window.confirm("Are you sure you want to submit this ticket? Make sure the information you provided is accurate and sufficiently detailed.")){setPage("submitted")}}}>Submit Ticket</button>
+                <button className="button" type="submit" onClick={() => {
+                    if(!summary.trim() || !details.trim()){
+                        window.alert("Please fill in the summary and details.");
+                        return;
+                    }
+                    if(window.confirm("Are you sure you want to submit this ticket? Make sure the information you provided is accurate and sufficiently detailed.")){
+                        setPage("submitted")
+                    }
+                    }}>Submit Ticket</button>
             </div>
         </div>
     );
