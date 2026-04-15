@@ -1,4 +1,4 @@
-.ec-page {
+.module-organiser-page {
     min-height: 100vh;
     background: linear-gradient(160deg, #29b6e8 0%, #1a7fc1 40%, #0a3d8f 100%);
     display: flex;
@@ -8,9 +8,8 @@
     padding: 40px 24px;
 }
 
-.ec-card {
+.module-organiser-card {
     width: 100%;
-    max-width: 960px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -18,35 +17,35 @@
     overflow: hidden;
 }
 
-.ec-card-header {
+.module-organiser-card-header {
     padding: 24px 32px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.ec-card-header h2 {
+.module-organiser-card-header h2 {
     margin: 0;
     font-size: 22px;
     font-weight: 700;
     color: #ffffff;
 }
 
-.ec-card-header p {
+.module-organiser-card-header p {
     margin: 4px 0 0;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.55);
 }
 
-.ec-table {
+.module-organiser-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
 }
 
-.ec-table thead tr {
+.module-organiser-table thead tr {
     background: transparent;
 }
 
-.ec-table th {
+.module-organiser-table th {
     padding: 14px 20px;
     text-align: left;
     font-weight: 600;
@@ -57,31 +56,31 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.ec-table td {
+.module-organiser-table td {
     padding: 16px 20px;
     color: rgba(255, 255, 255, 0.9);
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     font-size: 14px;
 }
 
-.ec-table tbody tr:nth-child(even) {
+.module-organiser-table tbody tr:nth-child(even) {
     background-color: rgba(255, 255, 255, 0.06);
 }
 
-.ec-table tbody tr:nth-child(odd) {
+.module-organiser-table tbody tr:nth-child(odd) {
     background-color: rgba(255, 255, 255, 0.03);
 }
 
-.ec-table tbody tr {
+.module-organiser-table tbody tr {
     transition: background-color 0.2s;
     cursor: default;
 }
 
-.ec-table tbody tr:hover {
+.module-organiser-table tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.13) !important;
 }
 
-.ec-empty {
+.module-organiser-empty {
     padding: 32px;
     color: rgba(255, 255, 255, 0.6);
     margin: 0;
