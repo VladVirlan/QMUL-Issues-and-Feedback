@@ -22,16 +22,16 @@ const ModuleOrganiser = () => {
     };
 
     return (
-        <div className="ec-card">
-                <div className="ec-card-header">
+        <div className="module-organiser-card">
+                <div className="module-organiser-card-header">
                     <h2>EC Submissions</h2>
                     <p>View your extenuating circumstance submissions</p>
                 </div>
 
                 {ecs.length === 0 ? (
-                    <p className="ec-empty">No EC submissions found.</p>
+                    <p className="module-organiser-empty">No EC submissions found.</p>
                 ) : (
-                    <table className="ec-table">
+                    <table className="module-organiser-table">
                         <thead>
                             <tr>
                                 <th>Module Organiser</th>

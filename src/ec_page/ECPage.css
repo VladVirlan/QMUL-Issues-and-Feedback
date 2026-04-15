@@ -1,16 +1,21 @@
 .ec-page-shell {
     width: 100%;
     height: 100%;
-    max-width: 1180px;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 12px 12px 0;
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
+    align-items: stretch;
     gap: 20px;
     overflow-y: auto;
 }
 
 .ec-main-content {
+    width: 100%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -131,6 +136,9 @@
 }
 
 .ec-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -247,6 +255,8 @@
 
 .ec-form-card,
 .ec-card {
+    width: 100%;
+    box-sizing: border-box;
     border-radius: 16px;
     padding: 22px;
     background: rgba(255, 255, 255, 0.08);
