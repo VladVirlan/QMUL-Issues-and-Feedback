@@ -18,6 +18,13 @@
     border: none;
 }
 
+.ticket_intro_heading {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+
 .tickets_heading {
     margin: 0;
     font-size: 2rem;
