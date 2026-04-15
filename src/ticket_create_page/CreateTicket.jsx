@@ -1,6 +1,6 @@
 import { useState } from "react";
 import IntroPage from "./components/IntroPage";
-import Form from "./components/form";
+import Form from "./components/Form";
 import Submitted from "./components/Submitted";
 import TicketDetails from "./components/TicketDetails";
 import CreateComment from "./components/CreateComment";
@@ -16,7 +16,7 @@ const CreateTicket = () => {
 
     return (
         <>
-            {page == "form" && <Form setPage={setPage} ticketType={ticketType} setSummary={setSummary} setDetails={setDetails}/>}
+            {page == "form" && <Form setPage={setPage} ticketType={ticketType} summary={summary} details={details} setSummary={setSummary} setDetails={setDetails}/>}
 
             {page == "intro_page" && <IntroPage setPage={setPage} setTicketType={setTicketType} setTicket={setTicket}/>}
 
@@ -24,7 +24,7 @@ const CreateTicket = () => {
 
             {page == "ticket_details" && <TicketDetails setPage={setPage} ticket={ticket}/>}
 
-            {page == "create_comment" && <CreateComment setPage={setPage} setCommentDetails={setCommentDetails} />}
+            {page == "create_comment" && <CreateComment setPage={setPage} commentDetails={commentDetails} setCommentDetails={setCommentDetails} />}
 
             {page == "insert_comment" && <InsertComment setPage={setPage} ticket={ticket} commentDetails={commentDetails} />}
         </>
