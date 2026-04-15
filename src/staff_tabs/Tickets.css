@@ -248,7 +248,7 @@
     color: rgba(242, 244, 255, 0.52);
 }
 
-@media (max-width: 102400px) {
+@media (max-width: 1024px) {
     .TicketsPage {
         grid-template-columns: 1fr;
     }
