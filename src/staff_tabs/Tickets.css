@@ -1,283 +1,294 @@
 .TicketsPage {
-    --text-main: #f2f4ff;
-    --text-muted: rgba(242, 244, 255, 0.76);
-
     display: grid;
-    grid-template-columns: minmax(280px, 0.95fr) minmax(420px, 1.35fr);
-    gap: 22px;
-    align-items: start;
-    color: var(--text-main);
-}
-
-.TicketsList,
-.TicketDetails {
-    border-radius: 14px;
-    backdrop-filter: blur(6px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20px;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 .TicketsList {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    max-height: 82vh;
+    gap: 10px;
     overflow-y: auto;
 }
 
-.TicketsList h2 {
-    margin: 2px 0 8px;
-    font-size: 1.1rem;
-    letter-spacing: 0.02em;
-}
-
 .TicketCard {
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.05);
-    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
     cursor: pointer;
-}
-
-.TicketCard:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.22);
+    transition: all 0.2s ease;
 }
 
 .TicketCard.selected {
-    border-color: rgba(111, 180, 255, 0.85);
-    box-shadow: 0 0 0 2px rgba(111, 180, 255, 0.28);
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid #3b82f6;
 }
 
 .TicketCard h3 {
-    margin: 0 0 8px;
-    font-size: 1rem;
+    margin: 0 0 8px 0;
 }
 
 .TicketCard p {
-    margin: 0 0 10px;
-    color: var(--text-muted);
-    font-size: 1rem;
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
 }
 
-.status-badge,
-.assigned-to,
-.role-badge,
-.timestamp {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    padding: 4px 10px;
-    font-size: 0.74rem;
-    line-height: 1;
-    margin-right: 8px;
-    margin-top: 4px;
+.TicketMeta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
 }
 
-.status-badge {
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    background: rgba(255, 255, 255, 0.08);
+.status-badge, .type-badge, .assigned-to {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
-.status-badge.open {
-    color: #c7e3ff;
-    border-color: rgba(112, 180, 255, 0.6);
-}
+.status-badge.open { background: #fef9c3; color: #854d0e; }
+.status-badge.in_progress { background: #dbeafe; color: #1e40af; }
+.status-badge.awaiting_information { background: #fed7aa; color: #9a3412; }
+.status-badge.closed { background: #dcfce7; color: #166534; }
 
-.status-badge.in_progress {
-    color: #ffe7ac;
-    border-color: rgba(255, 206, 92, 0.62);
-}
-
-.status-badge.awaiting_information {
-    color: #ffd0a8;
-    border-color: rgba(255, 153, 90, 0.62);
-}
-
-.status-badge.closed {
-    color: #bde7c8;
-    border-color: rgba(124, 221, 157, 0.62);
+.type-badge {
+    background: #e2e8f0;
+    color: #334155;
 }
 
 .assigned-to {
-    color: #d8ecff;
-    border: 1px solid rgba(144, 196, 255, 0.45);
-    background: rgba(128, 189, 255, 0.18);
+    background: #ddd6fe;
+    color: #4c1d95;
 }
 
 .TicketDetails {
     padding: 20px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
 }
 
-.TicketDetails h2 {
-    margin-top: 0;
-    margin-bottom: 12px;
+.FilterBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 12px;
 }
 
-.TicketDetails p {
-    color: var(--text-muted);
-    margin: 8px 0;
-    line-height: 1.5;
+.SearchInput {
+    flex: 2;
+    min-width: 150px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
 }
 
-.TicketDetails strong {
-    color: var(--text-main);
+.FilterBar select {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
 }
 
 .ActionButtons {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin: 16px 0 18px;
+    margin: 15px 0 20px 0;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.TicketDetails button,
-.NewMessage button {
-    border: 1px solid rgba(160, 202, 255, 0.38);
-    border-radius: 10px;
-    padding: 9px 14px;
-    background: rgba(124, 184, 255, 0.2);
-    color: var(--text-main);
+.TicketDetails button {
+    margin-right: 10px;
+    margin-top: 10px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+    transition: background 0.2s;
 }
 
-.TicketDetails button:hover,
-.NewMessage button:hover {
-    transform: translateY(-1px);
-    background: rgba(124, 184, 255, 0.3);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-}
-
-.TicketDetails button:focus-visible,
-.NewMessage button:focus-visible,
-.NewMessage textarea:focus-visible {
-    outline: 2px solid rgba(154, 203, 255, 0.95);
-    outline-offset: 2px;
-}
-
-.TicketDetails button:disabled,
-.NewMessage button:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-    transform: none;
+.TicketDetails button:hover {
+    background-color: #2563eb;
 }
 
 .TicketDetails button.danger {
-    border-color: rgba(255, 130, 130, 0.6);
-    background: rgba(255, 99, 99, 0.18);
+    background-color: #ef4444;
 }
 
 .TicketDetails button.danger:hover {
-    background: rgba(255, 99, 99, 0.3);
+    background-color: #dc2626;
 }
 
 .MessageThread {
-    margin-top: 8px;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(0, 0, 0, 0.15);
     padding: 12px;
-    max-height: 42vh;
+    margin: 15px 0;
+    flex: 1;
+    min-height: 250px;
+    max-height: 500px;
     overflow-y: auto;
 }
 
 .MessageThread h4 {
-    margin: 0 0 10px;
+    margin: 0 0 10px 0;
+    font-size: 1rem;
 }
 
 .MessageBubble {
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 10px;
-    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 10px;
     margin-bottom: 10px;
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.MessageBubble:last-child {
-    margin-bottom: 0;
 }
 
 .message-header {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
+    gap: 8px;
+    align-items: baseline;
     margin-bottom: 6px;
+    font-size: 0.75rem;
 }
 
 .role-badge {
-    color: #d7d6ff;
-    border: 1px solid rgba(181, 170, 255, 0.42);
-    background: rgba(173, 160, 255, 0.16);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 20px;
 }
 
 .timestamp {
-    color: rgba(230, 232, 252, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.7rem;
+    opacity: 0.7;
 }
 
-.MessageBubble p,
-.no-selection,
-.no-messages {
+.MessageBubble p {
     margin: 0;
-    color: var(--text-muted);
-    word-break: break-word;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.no-messages {
+    text-align: center;
+    opacity: 0.7;
+    font-style: italic;
+    padding: 20px;
 }
 
 .NewMessage {
-    margin-top: 14px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.NewMessage textarea {
+textarea {
     width: 100%;
-    min-height: 92px;
+    height: 80px;
+    margin-top: 10px;
+    padding: 10px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--text-main);
-    padding: 10px 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    font-family: inherit;
     resize: vertical;
-    margin-bottom: 10px;
 }
 
-.NewMessage textarea::placeholder {
-    color: rgba(242, 244, 255, 0.52);
+.NewMessage button {
+    align-self: flex-end;
+    background-color: #10b981;
+    margin-top: 0;
 }
 
-@media (max-width: 1024px) {
-    .TicketsPage {
-        grid-template-columns: 1fr;
-    }
-
-    .TicketsList {
-        max-height: 100vh;
-    }
-
-    .MessageThread {
-        max-height: 34vh;
-    }
+.NewMessage button:hover {
+    background-color: #059669;
 }
 
-@media (max-width: 640px) {
-    .TicketsPage {
-        gap: 14px;
-    }
+.no-selection {
+    text-align: center;
+    opacity: 0.7;
+    margin-top: 40px;
+}
 
-    .TicketsList,
-    .TicketDetails {
-        padding: 14px;
-    }
+.ModuleOrganiserView {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 20px;
+}
 
-    .ActionButtons {
-        gap: 8px;
-    }
+.ModuleSelector {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    .TicketDetails button,
-    .NewMessage button {
-        width: 100%;
-    }
+.ModuleSelector select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: white;
+}
+
+.ECClaimsTable {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.ECClaimsTable table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.ECClaimsTable th,
+.ECClaimsTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ECClaimsTable th {
+    background: rgba(0, 0, 0, 0.2);
+    font-weight: 600;
+}
+
+.ECClaimsTable tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.MessageThread::-webkit-scrollbar,
+.TicketsList::-webkit-scrollbar {
+    width: 6px;
+}
+.MessageThread::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+.MessageThread::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
 }
