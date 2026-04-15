@@ -30,6 +30,7 @@ const IntroPage = ({setPage, setTicketType, setTicket}) => {
 
     return (
         <div className="main_body">
+            <h2 className="tickets_heading">Tickets</h2>
             <div className="display_tickets" >
                 {tickets.map((ticket) => (
                     <button className="ticket" onClick={() => {setPage("ticket_details"); setTicket(ticket)}}>
