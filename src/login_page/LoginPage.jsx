@@ -48,7 +48,7 @@ const LoginPage = () => {
         <form className="LoginForm" onSubmit={handleLogin}>
             <img src={QMIcon} alt="" className="LogoIcon" />
 
-            <h1 className="FormTitle">Issues and Feedback</h1>
+            <h1 className="FormTitle">Q-Resolve</h1>
 
             <div className="InputContainer">
                 <img src={EmailIcon} alt="" className="InputIcon LeftIcon" />

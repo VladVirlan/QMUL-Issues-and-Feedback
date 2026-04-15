@@ -2,7 +2,7 @@ import "./ModuleOrganiser.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
 
-const TEST_UUID = "ea963eff-8126-4940-adcf-fbfe887cb572";
+const TEST_UUID = "b2d6aafa-216f-4065-9c4c-b8fde9bea4f2";
 
 const ModuleOrganiser = () => {
     const [ecs, setEcs] = useState([]);
@@ -15,22 +15,23 @@ const ModuleOrganiser = () => {
         const { data, error } = await supabase
             .from("module_organizer")
             .select("*")
-            .eq("module_organiser_id", TEST_UUID);
+            .eq("module_organiser_id", TEST_UUID)
+            .order("date", { ascending: true });
 
         if (!error) setEcs(data);
     };
 
     return (
-        <div className="ec-card">
-                <div className="ec-card-header">
+        <div className="module-organiser-card">
+                <div className="module-organiser-card-header">
                     <h2>EC Submissions</h2>
                     <p>View your extenuating circumstance submissions</p>
                 </div>
 
                 {ecs.length === 0 ? (
-                    <p className="ec-empty">No EC submissions found.</p>
+                    <p className="module-organiser-empty">No EC submissions found.</p>
                 ) : (
-                    <table className="ec-table">
+                    <table className="module-organiser-table">
                         <thead>
                             <tr>
                                 <th>Module Organiser</th>

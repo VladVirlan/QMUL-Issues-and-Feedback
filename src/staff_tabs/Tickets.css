@@ -2,34 +2,293 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20px;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 .TicketsList {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    overflow-y: auto;
 }
 
 .TicketCard {
     padding: 15px;
     border-radius: 10px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.TicketCard.selected {
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid #3b82f6;
+}
+
+.TicketCard h3 {
+    margin: 0 0 8px 0;
+}
+
+.TicketCard p {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.TicketMeta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.status-badge, .type-badge, .assigned-to {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.status-badge.open { background: #fef9c3; color: #854d0e; }
+.status-badge.in_progress { background: #dbeafe; color: #1e40af; }
+.status-badge.awaiting_information { background: #fed7aa; color: #9a3412; }
+.status-badge.closed { background: #dcfce7; color: #166534; }
+
+.type-badge {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.assigned-to {
+    background: #ddd6fe;
+    color: #4c1d95;
 }
 
 .TicketDetails {
     padding: 20px;
     border-radius: 10px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.FilterBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.SearchInput {
+    flex: 2;
+    min-width: 150px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.FilterBar select {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+}
+
+.ActionButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0 20px 0;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .TicketDetails button {
     margin-right: 10px;
     margin-top: 10px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.TicketDetails button:hover {
+    background-color: #2563eb;
+}
+
+.TicketDetails button.danger {
+    background-color: #ef4444;
+}
+
+.TicketDetails button.danger:hover {
+    background-color: #dc2626;
+}
+
+.MessageThread {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 15px 0;
+    flex: 1;
+    min-height: 250px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.MessageThread h4 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+}
+
+.MessageBubble {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.message-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: baseline;
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+}
+
+.role-badge {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 20px;
+}
+
+.timestamp {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.MessageBubble p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.no-messages {
+    text-align: center;
+    opacity: 0.7;
+    font-style: italic;
+    padding: 20px;
+}
+
+.NewMessage {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 textarea {
     width: 100%;
     height: 80px;
     margin-top: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.NewMessage button {
+    align-self: flex-end;
+    background-color: #10b981;
+    margin-top: 0;
+}
+
+.NewMessage button:hover {
+    background-color: #059669;
+}
+
+.no-selection {
+    text-align: center;
+    opacity: 0.7;
+    margin-top: 40px;
+}
+
+.ModuleOrganiserView {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 20px;
+}
+
+.ModuleSelector {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ModuleSelector select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: white;
+}
+
+.ECClaimsTable {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.ECClaimsTable table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.ECClaimsTable th,
+.ECClaimsTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ECClaimsTable th {
+    background: rgba(0, 0, 0, 0.2);
+    font-weight: 600;
+}
+
+.ECClaimsTable tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.MessageThread::-webkit-scrollbar,
+.TicketsList::-webkit-scrollbar {
+    width: 6px;
+}
+.MessageThread::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+.MessageThread::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
 }

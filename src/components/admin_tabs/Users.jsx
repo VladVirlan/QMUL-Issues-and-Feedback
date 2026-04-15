@@ -73,8 +73,8 @@ const Users = () => {
     };
 
     const createUser = async () => {
-        if (!newUser.email) {
-            alert("Email is required");
+        if (!newUser.email || !newUser.password) {
+            alert("Email and password are required");
             return;
         }
 
@@ -83,21 +83,30 @@ const Users = () => {
         const { data, error } = await supabase.auth.signUp({
             email: newUser.email,
             password: newUser.password,
-            options: {
-                data: {
-                    role: newUser.role,
-                },
-            },
         });
-
-        setActionLoading(null);
 
         if (error) {
             console.error(error);
             alert(error.message);
+            setActionLoading(null);
+            return;
+        }
+
+        const userId = data.user.id;
+
+        const { error: roleError } = await supabase
+            .from("users")
+            .update({ role: newUser.role })
+            .eq("id", userId);
+
+        setActionLoading(null);
+
+        if (roleError) {
+            console.error(roleError);
+            alert("User created, but role update failed");
         } else {
             alert("User created successfully");
-            setNewUser({ email: "", role: "user" });
+            setNewUser({ email: "", password: "", role: "user" });
             fetchUsers();
         }
     };
@@ -243,9 +252,11 @@ const Users = () => {
 
             <div className="InfoSection">
                 <h3>Permissions Info</h3>
-                <p>Admin: Full access</p>
-                <p>Staff: Limited management</p>
-                <p>User: Basic access</p>
+                <p>Admin: Full system control</p>
+                <p>Student Support: Manage student issues</p>
+                <p>IT Support: Handle technical problems</p>
+                <p>Lab Technician: Manage lab-specific issues</p>
+                <p>Student: Basic system access</p>
             </div>
         </div>
     );

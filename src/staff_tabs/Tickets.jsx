@@ -2,6 +2,140 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient";
 import "./Tickets.css";
 
+const ModuleOrganiserView = () => {
+  const [modules, setModules] = useState(["CS101", "CS201", "MATH101"]);
+  const [selectedModule, setSelectedModule] = useState("");
+  const [claims, setClaims] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (selectedModule) {
+      fetchECClaims();
+    }
+  }, [selectedModule]);
+
+  async function fetchECClaims() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("ec_claims")
+      .select(`
+        reference,
+        submitted_at,
+        status,
+        claim_type,
+        module_code,
+        circumstance,
+        user_id,
+        summary
+      `)
+      .eq("module_code", selectedModule)
+      .order("submitted_at", { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      const userIds = [...new Set(data.map(c => c.user_id))];
+      const { data: users, error: usersError } = await supabase
+        .from("users")
+        .select("id, email")
+        .in("id", userIds);
+      
+      if (!usersError && users) {
+        const userMap = {};
+        users.forEach(u => { userMap[u.id] = u.email; });
+        const enrichedClaims = data.map(claim => ({
+          ...claim,
+          student_email: userMap[claim.user_id] || "Unknown email"
+        }));
+        setClaims(enrichedClaims);
+      } else {
+        const fallbackClaims = data.map(claim => ({
+          ...claim,
+          student_email: claim.user_id
+        }));
+        setClaims(fallbackClaims);
+      }
+    } else {
+      setClaims([]);
+    }
+    setLoading(false);
+  }
+
+  const getStatusBadge = (status) => {
+    const statusColors = {
+      submitted: "#fef9c3",
+      under_review: "#dbeafe",
+      approved: "#dcfce7",
+      rejected: "#fee2e2"
+    };
+    return {
+      backgroundColor: statusColors[status] || "#e2e8f0",
+      padding: "4px 12px",
+      borderRadius: "20px",
+      fontSize: "0.8rem",
+      fontWeight: "500",
+      display: "inline-block"
+    };
+  };
+
+  return (
+    <div className="ModuleOrganiserView">
+      <h2>EC Outcomes (Read‑Only)</h2>
+      
+      <div className="ModuleSelector">
+        <label>Select Module: </label>
+        <select value={selectedModule} onChange={(e) => setSelectedModule(e.target.value)}>
+          <option value="">-- Choose a module --</option>
+          {modules.map(mod => (
+            <option key={mod} value={mod}>{mod}</option>
+          ))}
+        </select>
+      </div>
+
+      {loading && <p>Loading EC claims...</p>}
+
+      {!loading && selectedModule && claims.length === 0 && (
+        <p>No EC claims found for {selectedModule}.</p>
+      )}
+
+      {!loading && claims.length > 0 && (
+        <div className="ECClaimsTable">
+          <table>
+            <thead>
+              <tr>
+                <th>Student Email</th>
+                <th>EC Reference</th>
+                <th>Submitted</th>
+                <th>Type</th>
+                <th>Circumstance</th>
+                <th>Outcome (Status)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {claims.map(claim => (
+                <tr key={claim.reference}>
+                  <td>{claim.student_email}</td>
+                  <td>{claim.reference}</td>
+                  <td>{new Date(claim.submitted_at).toLocaleDateString()}</td>
+                  <td>{claim.claim_type}</td>
+                  <td>
+                    {claim.circumstance 
+                      ? claim.circumstance.substring(0, 60) + '...' 
+                      : 'No circumstance provided'}
+                  </td>
+                  <td>
+                    <span style={getStatusBadge(claim.status)}>
+                      {claim.status.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Tickets = () => {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -9,6 +143,12 @@ const Tickets = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [assignmentFilter, setAssignmentFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [availableTypes, setAvailableTypes] = useState([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -16,7 +156,7 @@ const Tickets = () => {
       if (user) {
         setUser(user);
         const { data: profile } = await supabase
-          .from("users")
+          .from("profiles")
           .select("role")
           .eq("id", user.id)
           .single();
@@ -29,14 +169,49 @@ const Tickets = () => {
   }, []);
 
   useEffect(() => {
+    fetchDistinctTypes();
     fetchTickets();
   }, []);
 
-  async function fetchTickets() {
+  useEffect(() => {
+    fetchTickets();
+  }, [statusFilter, typeFilter, assignmentFilter, searchTerm]);
+
+  async function fetchDistinctTypes() {
     const { data, error } = await supabase
       .from("tickets")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .select("type")
+      .not("type", "is", null);
+    if (!error && data) {
+      const uniqueTypes = [...new Set(data.map(t => t.type).filter(t => t))];
+      setAvailableTypes(uniqueTypes);
+    }
+  }
+
+  async function fetchTickets() {
+    let query = supabase.from("tickets").select("*");
+
+    if (statusFilter !== "all") {
+      query = query.eq("status", statusFilter);
+    }
+    if (typeFilter !== "all") {
+      query = query.eq("type", typeFilter);
+    }
+    if (assignmentFilter === "unassigned") {
+      query = query.is("assigned_to", null);
+    } else if (assignmentFilter === "assigned_to_me" && user) {
+      query = query.eq("assigned_to", user.id);
+    } else if (assignmentFilter === "assigned_to_others") {
+      query = query.not("assigned_to", "is", null);
+      if (user) {
+        query = query.neq("assigned_to", user.id);
+      }
+    }
+    if (searchTerm.trim()) {
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,message.ilike.%${searchTerm}%,student_email.ilike.%${searchTerm}%`);
+    }
+
+    const { data, error } = await query.order("created_at", { ascending: false });
     if (!error) setTickets(data || []);
   }
 
@@ -71,6 +246,7 @@ const Tickets = () => {
         user_role: "staff",
         message: "Staff member assigned themselves to this ticket",
       });
+      alert(`📧 [Mock Email] To student: Ticket #${id} has been assigned to you.`);
       fetchTickets();
       if (selectedTicket && selectedTicket.id === id) {
         fetchMessages(id);
@@ -86,11 +262,12 @@ const Tickets = () => {
       ticket_id: selectedTicket.id,
       user_id: user.id,
       user_email: user.email,
-      user_role: userRole || "staff",
+      user_role: userRole === "module_organiser" ? "module_organiser" : "staff",
       message: newMessage,
     });
 
     if (!error) {
+      alert(`📧 [Mock Email] To student: New message on ticket "${selectedTicket.title}"`);
       setNewMessage("");
       fetchMessages(selectedTicket.id);
     }
@@ -125,14 +302,17 @@ const Tickets = () => {
       "awaiting_information",
       "Requested additional information from student"
     );
+    alert(`📧 [Mock Email] To student: More information requested for ticket "${selectedTicket.title}".`);
   }
 
   async function resumeTicket() {
     await updateTicketStatus("in_progress", "Student has replied; resuming ticket");
+    alert(`📧 [Mock Email] To student: Ticket "${selectedTicket.title}" has been resumed.`);
   }
 
   async function closeTicket() {
     await updateTicketStatus("closed", "Ticket resolved and closed");
+    alert(`📧 [Mock Email] To student: Ticket "${selectedTicket.title}" has been closed.`);
   }
 
   async function markUnavailableAndReassign() {
@@ -164,10 +344,47 @@ const Tickets = () => {
     }
   }
 
+  if (userRole === "module_organiser") {
+    return <ModuleOrganiserView />;
+  }
+
   return (
     <div className="TicketsPage">
       <div className="TicketsList">
         <h2>All Tickets</h2>
+        
+        <div className="FilterBar">
+          <input
+            type="text"
+            placeholder="Search by title, description, or student email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="SearchInput"
+          />
+          
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="awaiting_information">Awaiting Info</option>
+            <option value="closed">Closed</option>
+          </select>
+          
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="all">All types</option>
+            {availableTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+          
+          <select value={assignmentFilter} onChange={(e) => setAssignmentFilter(e.target.value)}>
+            <option value="all">All tickets</option>
+            <option value="unassigned">Unassigned</option>
+            <option value="assigned_to_me">Assigned to me</option>
+            <option value="assigned_to_others">Assigned to others</option>
+          </select>
+        </div>
+
         {tickets.length === 0 && <p>No tickets found.</p>}
         {tickets.map((ticket) => (
           <div
@@ -177,8 +394,11 @@ const Tickets = () => {
           >
             <h3>{ticket.title}</h3>
             <p>{ticket.description || ticket.message}</p>
-            <span className={`status-badge ${ticket.status}`}>Status: {ticket.status}</span>
-            {ticket.assigned_to && <span className="assigned-to">Assigned</span>}
+            <div className="TicketMeta">
+              <span className={`status-badge ${ticket.status}`}>Status: {ticket.status}</span>
+              {ticket.type && <span className="type-badge">Type: {ticket.type}</span>}
+              {ticket.assigned_to && <span className="assigned-to">Assigned</span>}
+            </div>
           </div>
         ))}
       </div>
@@ -190,6 +410,7 @@ const Tickets = () => {
             <p><strong>Description:</strong> {selectedTicket.description || selectedTicket.message}</p>
             <p><strong>Student email:</strong> {selectedTicket.student_email}</p>
             <p><strong>Current status:</strong> {selectedTicket.status}</p>
+            {selectedTicket.type && <p><strong>Type:</strong> {selectedTicket.type}</p>}
 
             <div className="ActionButtons">
               {!selectedTicket.assigned_to && (
