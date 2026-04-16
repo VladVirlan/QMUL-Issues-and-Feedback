@@ -1,3 +1,11 @@
+.SearchInput::placeholder {
+    color : grey;
+}
+
+.TicketDetails p{
+    font-weight : 400;
+}
+
 .TicketsPage {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -95,6 +103,7 @@
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.9);
 }
+
 
 .FilterBar select {
     padding: 8px 12px;
